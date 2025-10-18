@@ -1,0 +1,73 @@
+---
+import Layout from "~/layouts/PageLayout.astro";
+import { getCollection } from "astro:content";
+
+const title = "Activities";
+const description =
+  "Reading groups, seminar series, workshops, and other initiatives.";
+
+const records = (await getCollection("activities"))
+  .filter((e) => !e.data.draft)
+  .sort((a, b) => a.data.weight - b.data.weight);
+
+// Group by type
+const groups = { "reading-group": [], seminar: [], workshop: [], other: [] };
+for (const r of records) groups[r.data.type].push(r);
+
+const typeLabel = {
+  "reading-group": "Reading Groups",
+  seminar: "Seminar Series",
+  workshop: "Workshops",
+  other: "Other Activities",
+};
+---
+
+<Layout title={title} description={description}>
+  <section class="relative mx-auto max-w-7xl px-6 py-16 sm:py-20">
+    <header class="mb-12 text-center">
+      <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h1>
+      <p class="mt-3 text-base/7 text-muted-foreground">{description}</p>
+    </header>
+
+    {Object.entries(groups).map(([type, entries]) =>
+      entries.length > 0 && (
+        <div class="mb-12" id={type}>
+          <h2 class="mb-4 text-xl font-semibold">{typeLabel[type]}</h2>
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {entries.map(({ slug, data }) => (
+              <article class="group relative flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition hover:shadow-md">
+                {data.image && (
+                  <img src={data.image} alt={data.title} loading="lazy" class="h-40 w-full object-cover" />
+                )}
+                <div class="flex flex-1 flex-col p-6">
+                  <h3 class="text-lg font-semibold group-hover:underline">
+                    <a href={`/activities/${slug}`}>{data.title}</a>
+                  </h3>
+                  <div class="mt-4 space-y-1 text-xs text-muted-foreground/80">
+                    {data.period && <p>🗓 {data.period}</p>}
+                    {data.location && <p>📍 {data.location}</p>}
+                  </div>
+                  {data.link && (
+                    <a
+                      href={data.link}
+                      target={data.link.startsWith("http") ? "_blank" : "_self"}
+                      rel="noopener noreferrer"
+                      class="mt-4 inline-block text-sm font-medium text-primary hover:underline"
+                    >
+                      Learn more →
+                    </a>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      )
+    )}
+
+    <div class="mt-14 rounded-2xl border border-dashed border-border/60 p-6 text-sm text-muted-foreground">
+      <p>To propose a new reading group or seminar, please contact the research management team.</p>
+    </div>
+  </section>
+</Layout>
+

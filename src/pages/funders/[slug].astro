@@ -1,0 +1,53 @@
+---
+import Layout from "~/layouts/PageLayout.astro";
+import { getEntryBySlug } from "astro:content";
+
+export async function getStaticPaths() {
+  const { getCollection } = await import("astro:content");
+  const entries = await getCollection("funders");
+  return entries.map((entry) => ({ params: { slug: entry.slug } }));
+}
+
+const { slug } = Astro.params;
+const entry = await getEntryBySlug("funders", slug!);
+if (!entry) throw new Error(`Funder not found: ${slug}`);
+const { Content } = await entry.render();
+const { title, website, logo, grant, area } = entry.data;
+---
+
+<Layout title={title} description={grant || area || website}>
+  <section class="relative mx-auto max-w-3xl px-6 py-12 sm:py-16">
+    <a href="/funders" class="text-sm text-muted-foreground hover:underline">← Back to funders</a>
+
+    <header class="mt-4 mb-8 flex items-center gap-4">
+      {logo ? (
+        <img
+          src={logo}
+          alt={`${title} logo`}
+          width="80"
+          height="80"
+          class="h-16 w-16 rounded-xl object-contain"
+        />
+      ) : (
+        <div class="flex h-16 w-16 items-center justify-center rounded-xl bg-muted text-xl font-semibold">
+          {title.split(" ").map((w) => w[0]).slice(0, 3).join("")}
+        </div>
+      )}
+      <div>
+        <h1 class="text-2xl font-semibold">{title}</h1>
+        <p class="mt-1 text-sm text-muted-foreground">
+          {grant && <span class="mr-2">{grant}</span>}
+          {area && <span class="mr-2">· {area}</span>}
+          <a href={website} target="_blank" rel="noopener noreferrer" class="underline">
+            Website
+          </a>
+        </p>
+      </div>
+    </header>
+
+    <article class="prose prose-invert max-w-none">
+      <Content />
+    </article>
+  </section>
+</Layout>
+

@@ -1,0 +1,55 @@
+---
+interface PartnerItem {
+  name: string;
+  image: string;            // e.g. /images/partners/sussex.svg or .png
+  href?: string;            // optional link to partner site
+  darkImage?: string;       // optional dark-mode variant
+  description?: string;     // short line under the name
+}
+
+const {
+  title = "Collaborating Institutions",
+  subtitle = "",
+  tagline = "Partners",
+  items = [] as PartnerItem[],
+} = Astro.props;
+---
+
+<section class="relative">
+  <div class="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+    <header class="mb-8 text-left">
+      <p class="text-xs uppercase tracking-wide text-muted-foreground">{tagline}</p>
+      <h2 class="mt-1 text-2xl font-semibold tracking-tight">{title}</h2>
+      {subtitle && <p class="mt-2 text-sm text-muted-foreground">{subtitle}</p>}
+    </header>
+
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {items.map((p) => (
+      <article class="group rounded-2xl border border-border/60 dark:border-white/10 bg-card p-6 shadow-sm transition hover:shadow-md">
+          <a href={p.href ?? "#"} class="block" target={p.href?.startsWith("http") ? "_blank" : "_self"} rel="noopener noreferrer">
+            <div class="flex items-center gap-4">
+              {/* Logo (supports light/dark swap) */}
+              {p.darkImage ? (
+                <picture>
+                  <source srcset={p.darkImage} media="(prefers-color-scheme: dark)" />
+                  <img src={p.image} alt={`${p.name} logo`} class="h-12 w-auto rounded-md object-contain" loading="lazy" />
+                </picture>
+              ) : (
+                <img src={p.image} alt={`${p.name} logo`} class="h-12 w-auto rounded-md object-contain" loading="lazy" />
+              )}
+
+              <div class="min-w-0">
+                <h3 class="truncate font-medium group-hover:underline">{p.name}</h3>
+                {p.description && <p class="mt-1 text-sm text-muted-foreground line-clamp-2">{p.description}</p>}
+              </div>
+            </div>
+          </a>
+        </article>
+      ))}
+    </div>
+  </div>
+
+  {/* Optional soft background like AstroWind sections */}
+  <!-- <div class="pointer-events-none absolute inset-0 -z-10 bg-blue-50/40 dark:bg-transparent"></div> -->
+</section>
+

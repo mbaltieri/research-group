@@ -1,0 +1,59 @@
+---
+import Layout from "~/layouts/PageLayout.astro";
+import { getEntryBySlug } from "astro:content";
+
+export async function getStaticPaths() {
+  const { getCollection } = await import("astro:content");
+  const entries = await getCollection("activities");
+  return entries.map((entry) => ({ params: { slug: entry.slug } }));
+}
+
+const { slug } = Astro.params;
+const entry = await getEntryBySlug("activities", slug!);
+if (!entry) throw new Error(`Activity not found: ${slug}`);
+const { Content } = await entry.render();
+const { title, type, period, location, link, image } = entry.data;
+
+const typeLabel = {
+  "reading-group": "Reading Group",
+  seminar: "Seminar",
+  workshop: "Workshop",
+  other: "Activity",
+};
+---
+
+<Layout title={title} description={`${typeLabel[type]}${period ? ` · ${period}` : ""}`}>
+  <section class="relative mx-auto max-w-3xl px-6 py-12 sm:py-16">
+    <a href="/activities" class="text-sm text-muted-foreground hover:underline">← Back to activities</a>
+
+    <header class="mt-4 mb-8 flex items-center gap-4">
+      {image ? (
+        <img src={image} alt={title} width="80" height="80" class="h-16 w-16 rounded-xl object-cover" />
+      ) : (
+        <div class="flex h-16 w-16 items-center justify-center rounded-xl bg-muted text-xl font-semibold">
+          {title.split(" ").map((w) => w[0]).slice(0, 3).join("")}
+        </div>
+      )}
+      <div>
+        <h1 class="text-2xl font-semibold">{title}</h1>
+        <p class="mt-1 text-sm text-muted-foreground">
+          <span>{typeLabel[type]}</span>
+          {period && <span class="ml-2">· {period}</span>}
+          {location && <span class="ml-2">· {location}</span>}
+        </p>
+        {link && (
+          <p class="mt-1 text-sm">
+            <a href={link} target={link.startsWith("http") ? "_blank" : "_self"} rel="noopener noreferrer" class="underline">
+              External link
+            </a>
+          </p>
+        )}
+      </div>
+    </header>
+
+    <article class="prose prose-invert max-w-none">
+      <Content />
+    </article>
+  </section>
+</Layout>
+

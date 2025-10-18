@@ -1,0 +1,26 @@
+---
+title: "Autonomous"
+authors:
+  - "Oka"
+  - "T."
+  - "Takashima"
+  - "K."
+  - "Ueda"
+  - "K."
+  - "Mori"
+  - "Y."
+  - "Sasaki"
+  - "K."
+  - "Hamada"
+  - "T, H."
+  - "Yamagata"
+  - "M."
+  - "Yamada"
+  - "Y."
+venue: "bidding, credible, decentralized, ethical, and funded (ABCDEF) publishing"
+year: 2023
+doi: "10.12688/f1000research.130188.1"
+arxiv: ""
+pubdate: ""
+addedAt: "2023-12-26"
+---
