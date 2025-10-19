@@ -5,7 +5,23 @@ import { getCollection } from "astro:content";
 const title = "Funders";
 const description =
   "We gratefully acknowledge the support of the following funding agencies and programs.";
-const records = (await getCollection("funders")).sort((a, b) => a.data.weight - b.data.weight);
+const records = (await getCollection("funders")).sort(
+  (a, b) => (a.data.weight ?? 0) - (b.data.weight ?? 0)
+);
+
+const funderLogos = import.meta.glob(
+  "~/assets/images/funders/*.{svg,png,jpg,jpeg,webp}",
+  { eager: true, import: "default" }
+);
+
+function resolveLogo(logo) {
+  if (!logo) return null;
+  const filename = logo.split("/").pop();
+  const entry = Object.entries(funderLogos).find(([p]) => p.endsWith("/" + filename));
+  if (!entry) return null;
+  const mod = entry[1];
+  return typeof mod === "string" ? mod : mod?.src ?? null;
+}
 ---
 
 <Layout title={title} description={description}>
@@ -16,35 +32,39 @@ const records = (await getCollection("funders")).sort((a, b) => a.data.weight - 
     </header>
 
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {records.map(({ slug, data }) => (
-        <a
-          href={`/funders/${slug}`}
-          class="group relative flex flex-col rounded-2xl border border-border/60 bg-card p-6 shadow-sm transition hover:shadow-md"
-        >
-          <div class="flex items-center gap-4">
-            {data.logo ? (
-              <img
-                src={data.logo}
-                alt={`${data.title} logo`}
-                loading="lazy"
-                width="72"
-                height="72"
-                class="h-14 w-14 rounded-xl object-contain"
-              />
-            ) : (
-              <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-muted text-xl font-semibold">
-                {data.title.split(" ").map((w) => w[0]).slice(0, 3).join("")}
+      {records.map(({ slug, data }) => {
+        const logoUrl = resolveLogo(data.logo);
+        return (
+          <a
+            href={`/funders/${slug}`}
+            class="group relative flex flex-col rounded-2xl border border-border/60 bg-card p-6 shadow-sm transition hover:shadow-md"
+          >
+            <div class="flex items-center gap-4">
+              {logoUrl ? (
+                <img
+                  src={logoUrl}
+                  alt={`${data.title} logo`}
+                  loading="lazy"
+                  decoding="async"
+                  width="72"
+                  height="72"
+                  class="h-14 w-14 rounded-xl object-contain"
+                />
+              ) : (
+                <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-muted text-xl font-semibold">
+                  {data.title.split(" ").map((w) => w[0]).slice(0, 3).join("")}
+                </div>
+              )}
+              <div class="min-w-0">
+                <h2 class="truncate text-lg font-medium group-hover:underline">{data.title}</h2>
+                {data.grant && <p class="mt-0.5 text-sm text-muted-foreground">{data.grant}</p>}
+                {data.area && <p class="mt-0.5 text-xs text-muted-foreground/80">{data.area}</p>}
               </div>
-            )}
-            <div class="min-w-0">
-              <h2 class="truncate text-lg font-medium group-hover:underline">{data.title}</h2>
-              {data.grant && <p class="mt-0.5 text-sm text-muted-foreground">{data.grant}</p>}
-              {data.area && <p class="mt-0.5 text-xs text-muted-foreground/80">{data.area}</p>}
             </div>
-          </div>
-          <p class="mt-4 text-sm text-muted-foreground">Read more →</p>
-        </a>
-      ))}
+            <p class="mt-4 text-sm text-muted-foreground">Read more →</p>
+          </a>
+        );
+      })}
     </div>
 
     <div class="mt-14 rounded-2xl border border-dashed border-border/60 p-6 text-sm text-muted-foreground">

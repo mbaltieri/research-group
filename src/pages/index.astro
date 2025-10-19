@@ -390,12 +390,22 @@ const recentPubItems = _pubs.map((p) => ({
 
   <!-- Recent Publications Widget ************** -->
   
-  <PublicationsShowcase
-    title="Recent Publications"
-    subtitle="Hand-picked highlights from our latest work"
-    items={recentPubItems}
-    viewAllHref="/publications"
-  />
+  <!-- <PublicationsShowcase -->
+  <!--   title="Recent Publications" -->
+  <!--   subtitle="Hand-picked highlights from our latest work" -->
+  <!--   items={recentPubItems} -->
+  <!--   viewAllHref="/publications" -->
+  <!-- /> -->
+
+<PublicationsShowcase
+  title="Recent Publications"
+  subtitle=""
+  items={recentPubItems}
+  viewAllHref="/research/publications"
+  dense={true}
+  showCovers={false}
+  background={true}
+/>
 
 
   <!-- Features2 Widget ************** -->

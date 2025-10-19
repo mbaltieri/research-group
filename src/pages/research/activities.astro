@@ -8,9 +8,8 @@ const description =
 
 const records = (await getCollection("activities"))
   .filter((e) => !e.data.draft)
-  .sort((a, b) => a.data.weight - b.data.weight);
+  .sort((a, b) => (a.data.weight ?? 0) - (b.data.weight ?? 0));
 
-// Group by type
 const groups = { "reading-group": [], seminar: [], workshop: [], other: [] };
 for (const r of records) groups[r.data.type].push(r);
 
@@ -20,6 +19,18 @@ const typeLabel = {
   workshop: "Workshops",
   other: "Other Activities",
 };
+
+const activityImages = import.meta.glob("~/assets/images/activities/*.{jpg,jpeg,png,webp,svg}", {
+  eager: true,
+  import: "default",
+});
+
+function resolveImagePath(path) {
+  if (!path) return null;
+  const filename = path.split("/").pop();
+  const entry = Object.entries(activityImages).find(([p]) => p.endsWith("/" + filename));
+  return entry ? (typeof entry[1] === "string" ? entry[1] : entry[1].src) : null;
+}
 ---
 
 <Layout title={title} description={description}>
@@ -34,32 +45,43 @@ const typeLabel = {
         <div class="mb-12" id={type}>
           <h2 class="mb-4 text-xl font-semibold">{typeLabel[type]}</h2>
           <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {entries.map(({ slug, data }) => (
-              <article class="group relative flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition hover:shadow-md">
-                {data.image && (
-                  <img src={data.image} alt={data.title} loading="lazy" class="h-40 w-full object-cover" />
-                )}
-                <div class="flex flex-1 flex-col p-6">
-                  <h3 class="text-lg font-semibold group-hover:underline">
-                    <a href={`/activities/${slug}`}>{data.title}</a>
-                  </h3>
-                  <div class="mt-4 space-y-1 text-xs text-muted-foreground/80">
-                    {data.period && <p>🗓 {data.period}</p>}
-                    {data.location && <p>📍 {data.location}</p>}
-                  </div>
-                  {data.link && (
-                    <a
-                      href={data.link}
-                      target={data.link.startsWith("http") ? "_blank" : "_self"}
-                      rel="noopener noreferrer"
-                      class="mt-4 inline-block text-sm font-medium text-primary hover:underline"
-                    >
-                      Learn more →
-                    </a>
+            {entries.map(({ slug, data }) => {
+              const resolved = resolveImagePath(data.image);
+              return (
+                <article class="group relative flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition hover:shadow-md">
+                  {resolved ? (
+                    <img
+                      src={resolved}
+                      alt={data.title}
+                      loading="lazy"
+                      decoding="async"
+                      class="h-40 w-full object-cover"
+                    />
+                  ) : (
+                    <div class="h-40 w-full bg-white/10" />
                   )}
-                </div>
-              </article>
-            ))}
+                  <div class="flex flex-1 flex-col p-6">
+                    <h3 class="text-lg font-semibold group-hover:underline">
+                      <a href={`/activities/${slug}`}>{data.title}</a>
+                    </h3>
+                    <div class="mt-4 space-y-1 text-xs text-muted-foreground/80">
+                      {data.period && <p>🗓 {data.period}</p>}
+                      {data.location && <p>📍 {data.location}</p>}
+                    </div>
+                    {data.link && (
+                      <a
+                        href={data.link}
+                        target={data.link.startsWith("http") ? "_blank" : "_self"}
+                        rel="noopener noreferrer"
+                        class="mt-4 inline-block text-sm font-medium text-primary hover:underline"
+                      >
+                        Learn more →
+                      </a>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </div>
       )
