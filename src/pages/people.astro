@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import PageLayout from "~/layouts/PageLayout.astro";
+import CallToAction from '~/components/widgets/CallToAction.astro';
 
 // 1️⃣  import.meta.glob will grab every image in src/assets/images/people
 // and give you their resolved URL (ImageMetadata.src)
@@ -45,7 +46,7 @@ const grouped = ORDERED_GROUPS.map((group) => ({
 
 <PageLayout title="People">
   <section class="mx-auto max-w-7xl px-6 py-16">
-    <h1 class="text-4xl font-bold tracking-tight mb-10">People</h1>
+    <h1 class="text-4xl font-bold tracking-tight mb-10">Out team</h1>
 
     <nav class="mb-10 flex flex-wrap gap-3 text-sm opacity-90">
       {grouped.map((g) => (
@@ -134,5 +135,29 @@ const grouped = ORDERED_GROUPS.map((group) => ({
       </section>
     ))}
   </section>
+
+  <CallToAction
+    actions={[
+      {
+        variant: 'primary',
+        text: 'Research Careers',
+        href: 'https://github.com/arthelokyo/astrowind',
+        target: '_blank',
+        icon: 'tabler:jump-rope',
+      },
+    ]}
+  >
+    <Fragment slot="title">
+      Join us
+      <!-- Astro&nbsp;+&nbsp;<br class="block sm:hidden" /><span class="sm:whitespace-nowrap">Tailwind CSS</span> -->
+    </Fragment>
+
+    <!-- <Fragment slot="subtitle"> -->
+    <!--   Be very surprised by these huge fake numbers you are seeing on this page. <br class="hidden md:inline" />Don't -->
+    <!--   waste more time! :P -->
+    <!-- </Fragment> -->
+  </CallToAction>
+
 </PageLayout>
+
 

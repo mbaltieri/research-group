@@ -24,16 +24,16 @@ export const headerData = {
     //   ],
     // },
     {
-      text: 'About us',
+      text: 'Overview',
       href: getPermalink('/about'),
     },
-    {
-      text: 'Research',
-      links: [
-        {
-          text: 'Projects',
-          href: getPermalink('/projects'),
-        },
+    // {
+    //   text: 'Research',
+    //   links: [
+        // {
+        //   text: 'Projects',
+        //   href: getPermalink('/projects'),
+        // },
         {
           text: 'Funders',
           href: getPermalink('/research/funders'),
@@ -43,11 +43,11 @@ export const headerData = {
           href: getPermalink('/research/publications'),
         },
         {
-          text: 'Activities',
+          text: 'Initiatives',
           href: getPermalink('/research/activities'),
         },
-      ],
-    },
+    //   ],
+    // },
     {
       text: 'Team',
       href: getPermalink('/people') 
@@ -56,10 +56,10 @@ export const headerData = {
       text: 'Blog',
       href: getBlogPermalink(),
     },
-    {
-      text: 'Careers',
-      href: "https://herp.careers/v1/arayainc" 
-    },
+    // {
+    //   text: 'Careers',
+    //   href: "https://herp.careers/v1/arayainc" 
+    // },
     // {
     //   text: 'Pages',
     //   links: [
@@ -180,11 +180,21 @@ export const footerData = {
     //   ],
     // },
     {
-      title: 'Company',
+      title: 'Research',
+      links: [
+        { text: 'Overview', href: getPermalink('/about') },
+        { text: 'Blog', href: getBlogPermalink() },
+        // { text: 'Projects', href: getPermalink('/projects') },
+        { text: 'Publications', href: getPermalink('research/publications') },
+        { text: 'Join us', href: 'https://www.araya.org/recruit/' },
+      ],
+    },
+    {
+      title: 'Business',
       links: [
         { text: 'About', href: 'https://www.araya.org/en/about/' },
         { text: 'News', href: 'https://www.araya.org/en/about/' },
-        { text: 'Business', href: 'https://www.araya.org/en/business/' },
+        { text: 'Projects', href: 'https://www.araya.org/en/business/' },
         { text: 'Careers', href: 'https://www.araya.org/recruit/' },
       ],
     },
@@ -211,6 +221,6 @@ export const footerData = {
     { ariaLabel: 'Github', icon: 'tabler:brand-github', href: 'https://github.com/arayabrain' },
   ],
   footNote: `
-    Made by <a class="text-blue-600 underline dark:text-muted" href="https://github.com/arthelokyo"> Arthelokyo</a> · All rights reserved.
+    Made by <a class="text-blue-600 underline dark:text-muted" href="https://araya.org"> Araya</a> · All rights reserved.
   `,
 };

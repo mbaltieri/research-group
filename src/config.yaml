@@ -1,5 +1,5 @@
 site:
-  name: Araya R&D
+  name: Araya Research
   site: 'https://arayaresearch.netlify.app'
   base: '/'
   trailingSlash: false
@@ -9,14 +9,14 @@ site:
 # Default SEO metadata
 metadata:
   title:
-    default: Araya R&D
+    default: Araya Research
     template: '%s — AstroWind'
   description: "\U0001F680 Research & Development at Araya: advancing artificial consciousness, neuroscience, and AI."
   robots:
     index: true
     follow: true
   openGraph:
-    site_name: Araya R&D
+    site_name: Araya Research
     images:
       - url: '~/assets/images/araya.png'
         width: 1200
