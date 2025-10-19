@@ -14,7 +14,14 @@ import CallToAction from '~/components/widgets/CallToAction.astro';
 import LogoGrid from '~/components/widgets/LogoGrid.astro';
 import PublicationsShowcase from "~/components/widgets/PublicationsShowcase.astro";
 
-
+// import from src/*
+import sussex from '~/assets/images/partners/university-of-sussex.jpg';
+import crosslabs from '~/assets/images/partners/cross-labs.jpg';
+import chain from '~/assets/images/partners/chain.jpg';
+import uTokyo from '~/assets/images/partners/university-of-tokyo.jpg';
+import kyoto from '~/assets/images/partners/kyoto-university.jpg';
+import herts from '~/assets/images/partners/university-of-hertfordshire.jpg';
+import align from '~/assets/images/partners/align.jpg';
 
 const metadata = {
   title: 'Araya Research - The Research & Development division of Araya',
@@ -314,7 +321,7 @@ const recentPubItems = _pubs.map((p) => ({
   items={[
     {
       name: 'University of Sussex',
-      image: '~/assets/images/partners/university-of-sussex.jpg',
+      image: sussex.src,
       href: 'https://www.sussex.ac.uk/',
       description: 'RL and neuroscience.',
     },
@@ -326,19 +333,19 @@ const recentPubItems = _pubs.map((p) => ({
     // },
     {
       name: 'CrossLabs',
-      image: '~/assets/images/partners/cross-labs.jpg',
+      image: crosslabs.src,
       href: 'https://www.crosslabs.org/',
       description: 'AI safety and agent foundations.',
     },
     {
       name: 'CHAIN',
-      image: '~/assets/images/partners/chain.jpg',
-      href: 'https://www.chain.hokudai.ac.jp/en/',
+      image: chain.src,
+      href: chain.src,
       description: 'Agency foundations and cognition.',
     },
     {
       name: 'University of Tokyo',
-      image: '~/assets/images/partners/university-of-tokyo.jpg',
+      image: uTokyo.src,
       href: 'https://www.u-tokyo.ac.jp/',
       description: 'Computational models of phenomenology.',
     },
@@ -362,19 +369,19 @@ const recentPubItems = _pubs.map((p) => ({
     // },
     {
       name: 'Kyoto University',
-      image: '~/assets/images/partners/kyoto-university.jpg',
+      image: kyoto.src,
       href: 'https://www.kyoto-u.ac.jp/',
       description: 'Neuroscience and symbol emergence.',
     },
     {
       name: 'University of Hertfordshire',
-      image: '~/assets/images/partners/university-of-hertfordshire.jpg',
+      image: herts.src,
       href: 'https://www.herts.ac.uk',
       description: 'AI safety and agent foundations.',
     },
     {
       name: 'ALIGN',
-      image: '~/assets/images/partners/align.jpg',
+      image: align.src,
       href: 'https://www.aialign.net',
       description: 'AI alignment and governance.',
     },
