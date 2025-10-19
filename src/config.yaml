@@ -1,6 +1,6 @@
 site:
-  name: AstroWind
-  site: 'https://astrowind.vercel.app'
+  name: Araya R&D
+  site: 'https://arayaresearch.netlify.app'
   base: '/'
   trailingSlash: false
 
@@ -9,16 +9,16 @@ site:
 # Default SEO metadata
 metadata:
   title:
-    default: AstroWind
+    default: Araya R&D
     template: '%s — AstroWind'
-  description: "\U0001F680 Suitable for Startups, Small Business, Sass Websites, Professional Portfolios, Marketing Websites, Landing Pages & Blogs."
+  description: "\U0001F680 Research & Development division at Araya."
   robots:
     index: true
     follow: true
   openGraph:
-    site_name: AstroWind
+    site_name: Araya R&D
     images:
-      - url: '~/assets/images/default.png'
+      - url: '~/assets/images/araya.png'
         width: 1200
         height: 628
     type: website
