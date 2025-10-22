@@ -6,18 +6,21 @@ import { getPermalink } from '~/utils/permalinks';
 
 export const GET = async () => {
   if (!APP_BLOG.isEnabled) {
-    return new Response(null, {
-      status: 404,
-      statusText: 'Not found',
-    });
+    return new Response(null, { status: 404, statusText: 'Not found' });
   }
 
   const posts = await fetchPosts();
 
+  // Coerce AstroWind's string enum to the boolean RSS expects:
+  const rssTrailingSlash =
+    typeof SITE.trailingSlash === 'boolean'
+      ? SITE.trailingSlash
+      : SITE.trailingSlash === 'always';
+
   const rss = await getRssString({
     title: `${SITE.name}’s Blog`,
     description: METADATA?.description || '',
-    site: import.meta.env.SITE,
+    site: import.meta.env.SITE, // keep your current source for the base URL
 
     items: posts.map((post) => ({
       link: getPermalink(post.permalink, 'post'),
@@ -26,12 +29,11 @@ export const GET = async () => {
       pubDate: post.publishDate,
     })),
 
-    trailingSlash: SITE.trailingSlash,
+    trailingSlash: rssTrailingSlash, // ✅ boolean now
   });
 
   return new Response(rss, {
-    headers: {
-      'Content-Type': 'application/xml',
-    },
+    headers: { 'Content-Type': 'application/xml' },
   });
 };
+
