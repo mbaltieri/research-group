@@ -15,6 +15,9 @@ import astrowind from './vendor/integration';
 
 import { readingTimeRemarkPlugin, responsiveTablesRehypePlugin, lazyImagesRehypePlugin } from './src/utils/frontmatter';
 
+import { defineConfig } from "astro/config";   // language support
+
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const hasExternalScripts = false;
@@ -85,6 +88,15 @@ export default defineConfig({
       alias: {
         '~': path.resolve(__dirname, './src'),
       },
+    },
+  },
+
+  // adding language support
+  i18n: {
+    defaultLocale: "en",
+    locales: ["en", "ja", "it"],  // add your languages
+    routing: {
+      prefixDefaultLocale: false, // optional: omit /en/ in URLs
     },
   },
 });
