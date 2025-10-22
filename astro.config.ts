@@ -16,6 +16,7 @@ import astrowind from './vendor/integration';
 import { readingTimeRemarkPlugin, responsiveTablesRehypePlugin, lazyImagesRehypePlugin } from './src/utils/frontmatter';
 
 import { defineConfig } from "astro/config";   // language support
+import { LOCALES, DEFAULT_LOCALE } from './src/i18n.config.ts';
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -92,11 +93,13 @@ export default defineConfig({
   },
 
   // adding language support
+  site: 'https://your-domain.com',
   i18n: {
-    defaultLocale: "en",
-    locales: ["en", "ja", "it"],  // add your languages
+    defaultLocale: DEFAULT_LOCALE,
+    locales: [...LOCALES],
     routing: {
-      prefixDefaultLocale: false, // optional: omit /en/ in URLs
+      // set to true if you want /en/ prefix for the default too
+      prefixDefaultLocale: false,
     },
   },
 });

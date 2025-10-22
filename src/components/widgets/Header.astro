@@ -32,6 +32,9 @@ export interface Props {
   showToggleTheme?: boolean;
   showRssFeed?: boolean;
   position?: string;
+
+  /** NEW: force show/hide language switcher per render (overrides auto) */
+  showLanguageSwitcher?: boolean;
 }
 
 const {
@@ -44,9 +47,21 @@ const {
   showToggleTheme = false,
   showRssFeed = false,
   position = 'center',
+  showLanguageSwitcher, // may be undefined
 } = Astro.props;
 
 const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
+
+// --- NEW: decide if we should render the language switcher
+// Priority: ENV > prop > auto-default(false)
+const envFlag = import.meta.env.PUBLIC_ENABLE_I18N;
+const envToggle = typeof envFlag === 'string' ? envFlag.toLowerCase() === 'true' : undefined;
+
+// If you want a smarter "auto" later, you can replace the fallback `?? false` with your own logic (e.g., check for jp folder)
+const shouldShowLang =
+  (envToggle !== undefined) ? envToggle :
+  (typeof showLanguageSwitcher === 'boolean') ? showLanguageSwitcher :
+  false; // default off
 ---
 
 <header
@@ -80,6 +95,7 @@ const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
         <ToggleMenu />
       </div>
     </div>
+
     <nav
       class="items-center w-full md:w-auto hidden md:flex md:mx-5 text-default overflow-y-auto overflow-x-hidden md:overflow-y-visible md:overflow-x-auto md:justify-self-center"
       aria-label="Main navigation"
@@ -130,7 +146,14 @@ const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
           ))
         }
       </ul>
+
+      {shouldShowLang && (
+        <div class="hidden md:flex items-center md:ml-3 lg:ml-4 md:pl-3 lg:pl-4 border-l border-neutral-200 dark:border-neutral-700">
+          <LanguageSwitcher />
+        </div>
+      )}
     </nav>
+
     <div
       class:list={[
         { 'ml-auto rtl:ml-0 rtl:mr-auto': position === 'left' },
@@ -151,11 +174,6 @@ const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
               </a>
             )
           }
-
-          {/* 👉 Language Switcher here */}
-          <div class="ml-2">
-            <LanguageSwitcher />
-          </div>
         </div>
         {
           actions?.length ? (
@@ -172,3 +190,4 @@ const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
     </div>
   </div>
 </header>
+

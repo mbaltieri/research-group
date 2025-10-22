@@ -1,0 +1,32 @@
+---
+import { locales, currentLocale, localizedUrl } from '~/utils/i18n';
+
+const url = Astro.url;
+const curr = currentLocale(Astro.currentLocale);
+const all = locales();
+---
+
+<nav aria-label="Language switcher" class="flex items-center">
+  <ul class="flex items-center gap-1">
+    {all.map((loc) => {
+      const href = localizedUrl(loc, url);
+      const isActive = loc === curr;
+      return (
+        <li>
+          <a
+            href={href}
+            hreflang={loc}
+            aria-current={isActive ? 'true' : 'false'}
+            class={`px-2 py-1 rounded-md text-sm transition
+              ${isActive
+                ? 'bg-primary/10 text-primary font-medium'
+                : 'hover:bg-neutral-200/60 dark:hover:bg-neutral-800/60'}`}
+          >
+            {loc.toUpperCase()}
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+</nav>
+

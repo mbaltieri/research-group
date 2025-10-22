@@ -1,0 +1,183 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+
+import Hero from '~/components/widgets/Hero.astro';
+import Note from '~/components/widgets/Note.astro';
+import Features from '~/components/widgets/Features.astro';
+import Features2 from '~/components/widgets/Features2.astro';
+import Steps from '~/components/widgets/Steps.astro';
+import Content from '~/components/widgets/Content.astro';
+import BlogLatestPosts from '~/components/widgets/BlogLatestPosts.astro';
+import FAQs from '~/components/widgets/FAQs.astro';
+import Stats from '~/components/widgets/Stats.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import LogoGrid from '~/components/widgets/LogoGrid.astro';
+import PublicationsShowcase from "~/components/widgets/PublicationsShowcase.astro";
+
+// images
+import sussex from '~/assets/images/partners/university-of-sussex.jpg';
+import crosslabs from '~/assets/images/partners/cross-labs.jpg';
+import chain from '~/assets/images/partners/chain.jpg';
+import uTokyo from '~/assets/images/partners/university-of-tokyo.jpg';
+import kyoto from '~/assets/images/partners/kyoto-university.jpg';
+import herts from '~/assets/images/partners/university-of-hertfordshire.jpg';
+import align from '~/assets/images/partners/align.jpg';
+
+const metadata = {
+  title: 'Araya Research - アラヤの研究開発部門',
+  ignoreTitleTemplate: true,
+};
+
+import { getCollection } from 'astro:content';
+
+// Load 9 most recent publications (non-draft), sort by year then date if present
+const publications = (await getCollection('publications'))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => {
+    const by = b.data.year ?? 0;
+    const ay = a.data.year ?? 0;
+    if (by !== ay) return by - ay;
+    const bd = b.data.date ? new Date(b.data.date).getTime() : 0;
+    const ad = a.data.date ? new Date(a.data.date).getTime() : 0;
+    return bd - ad;
+  })
+  .slice(0, 9);
+
+// Choose how many to show on the homepage:
+const N = 9;
+
+// Load & sort by (year DESC, then date DESC)
+const _pubs = (await getCollection("publications"))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => {
+    const by = b.data.year ?? 0;
+    const ay = a.data.year ?? 0;
+    if (by !== ay) return by - ay;
+    const bd = b.data.date ? new Date(b.data.date).getTime() : 0;
+    const ad = a.data.date ? new Date(a.data.date).getTime() : 0;
+    return bd - ad;
+  })
+  .slice(0, N);
+
+// Map to widget items
+const recentPubItems = _pubs.map((p) => ({
+  href: `/jp/publications/${p.slug}`,
+  title: p.data.title,
+  authors: p.data.authors,
+  venue: p.data.venue,
+  year: p.data.year,
+  cover: p.data.cover,
+  badge: p.data.badge || p.data.source,
+  doi: p.data.doi,
+  pdf: p.data.pdf,
+  external: p.data.url || p.data.arxiv,
+}));
+---
+
+<Layout metadata={metadata}>
+  <!-- Hero ************************** -->
+  <Hero
+    actions={[
+      {
+        variant: 'primary',
+        text: 'アラヤ公式サイト',
+        href: 'https://www.araya.org',
+        target: '_blank',
+        icon: 'tabler:rocket',
+      },
+    ]}
+    image={{
+      src: '~/assets/images/araya.png',
+      alt: 'Araya',
+    }}
+  >
+    <Fragment slot="title">
+      神経科学とAIで人類の未来を切り拓く
+    </Fragment>
+
+    <Fragment slot="subtitle">
+      <span class="hidden sm:inline">アラヤにより推進される研究開発</span>
+    </Fragment>
+  </Hero>
+
+  <!-- Partners ********************** -->
+  <LogoGrid
+    title="連携機関"
+    subtitle="協働する大学・研究機関・企業"
+    tagline="パートナー"
+    items={[
+      {
+        name: 'University of Sussex',
+        image: sussex.src,
+        href: 'https://www.sussex.ac.uk/',
+        description: 'RL と神経科学。',
+      },
+      {
+        name: 'CrossLabs',
+        image: crosslabs.src,
+        href: 'https://www.crosslabs.org/',
+        description: 'AI セーフティとエージェント基盤。',
+      },
+      {
+        name: 'CHAIN',
+        image: chain.src,
+        href: 'https://www.chain.hokudai.ac.jp/en/',
+        description: 'エージェンシー基礎と認知。',
+      },
+      {
+        name: 'University of Tokyo',
+        image: uTokyo.src,
+        href: 'https://www.u-tokyo.ac.jp/',
+        description: '現象学の計算モデル。',
+      },
+      {
+        name: 'Kyoto University',
+        image: kyoto.src,
+        href: 'https://www.kyoto-u.ac.jp/',
+        description: '神経科学と記号創発。',
+      },
+      {
+        name: 'University of Hertfordshire',
+        image: herts.src,
+        href: 'https://www.herts.ac.uk',
+        description: 'AI セーフティとエージェント基盤。',
+      },
+      {
+        name: 'ALIGN',
+        image: align.src,
+        href: 'https://www.aialign.net',
+        description: 'AI アラインメントとガバナンス。',
+      },
+    ]}
+  />
+
+  <!-- Publications ****************** -->
+  <PublicationsShowcase
+    title="最近の出版物"
+    subtitle=""
+    items={recentPubItems}
+    viewAllHref="/jp/research/publications"
+    dense={true}
+    showCovers={false}
+    background={true}
+  />
+
+  <!-- Blog ************************** -->
+  <BlogLatestPosts
+    title="ブログの最新記事"
+    information={`AstroWind の使い方や研究活動の近況を掲載しています。
+                        新しい記事を通じて、Astro + Tailwind CSS による開発や
+                        研究テーマの背景をご紹介します。`}
+  />
+
+  <!-- Stats ************************* -->
+  <Stats
+    stats={[
+      { title: 'ダウンロード', amount: '132K' },
+      { title: 'スター', amount: '24.8K' },
+      { title: 'フォーク', amount: '10.3K' },
+      { title: 'ユーザー', amount: '48.4K' },
+    ]}
+  />
+</Layout>
+
