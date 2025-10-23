@@ -2,9 +2,9 @@
 import { getCollection } from "astro:content";
 import PageLayout from "~/layouts/PageLayout.astro";
 import CallToAction from '~/components/widgets/CallToAction.astro';
+import { ORDERED_GROUPS } from '~/roles.ts';
 
-// 1️⃣  import.meta.glob will grab every image in src/assets/images/people
-// and give you their resolved URL (ImageMetadata.src)
+// Grab every image in src/assets/images/people and get their resolved URL
 const peopleImages = import.meta.glob("~/assets/images/people/*.{jpg,jpeg,png,webp,svg}", {
   eager: true,
   import: "default",
@@ -12,22 +12,10 @@ const peopleImages = import.meta.glob("~/assets/images/people/*.{jpg,jpeg,png,we
 
 function resolveImagePath(path) {
   if (!path) return null;
-
-  // handle paths like "src/assets/images/people/ryota.jpg"
-  const filename = path.split("/").pop(); // e.g., ryota.jpg
-  const entry = Object.entries(peopleImages).find(([p]) =>
-    p.endsWith("/" + filename)
-  );
-  return entry ? entry[1].src ?? entry[1] : null;
+  const filename = path.split("/").pop();
+  const entry = Object.entries(peopleImages).find(([p]) => p.endsWith("/" + filename));
+  return entry ? (entry[1].src ?? entry[1]) : null;
 }
-
-// -----------------------------------------------------------------
-const ORDERED_GROUPS = [
-  "Executive Team",
-  "Team Leaders",
-  "Researchers",
-  "Advisors",
-] as const;
 
 const people = await getCollection("people");
 
@@ -46,9 +34,21 @@ const grouped = ORDERED_GROUPS.map((group) => ({
 
 <PageLayout title="People">
   <section class="mx-auto max-w-7xl px-6 py-16">
-    <h1 class="text-4xl font-bold tracking-tight mb-10">Out team</h1>
+    <h1
+      class="mb-10 text-4xl font-bold tracking-tight
+             intersect-once intersect-quarter intersect-no-queue
+             motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+      style="animation-delay:120ms"
+    >
+      Our team
+    </h1>
 
-    <nav class="mb-10 flex flex-wrap gap-3 text-sm opacity-90">
+    <nav
+      class="mb-10 flex flex-wrap gap-3 text-sm opacity-90
+             intersect-once intersect-quarter intersect-no-queue
+             motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+      style="animation-delay:180ms"
+    >
       {grouped.map((g) => (
         <a
           href={`#${g.label.toLowerCase()}`}
@@ -62,15 +62,33 @@ const grouped = ORDERED_GROUPS.map((group) => ({
     {grouped.map((g, idx) => (
       <section
         id={g.label.toLowerCase()}
-        class={idx > 0 ? "pt-12 mt-12 border-t border-white/10" : ""}
+        class={idx > 0 ? "mt-12 border-t border-white/10 pt-12" : ""}
       >
-        <h2 class="text-2xl font-semibold tracking-tight mb-6">{g.label}</h2>
+        <h2
+          class="mb-6 text-2xl font-semibold tracking-tight
+                 intersect-once intersect-quarter intersect-no-queue
+                 motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+          style="animation-delay:140ms"
+        >
+          {g.label}
+        </h2>
 
         <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {g.people.map(({ data }) => {
+          {g.people.map(({ data }, i) => {
             const resolved = resolveImagePath(data.image);
+            const delay = Math.min(i * 70 + 100, 500); // small stagger
             return (
-              <article class="group rounded-2xl border border-white/10 bg-white/5 p-6 shadow-sm backdrop-blur transition hover:shadow-lg dark:bg-white/5">
+              <article
+                class="
+                  group rounded-2xl border border-[#ffffff29] dark:border-white/10
+                  bg-white/80 dark:bg-slate-900/80
+                  p-6 backdrop-blur shadow-[0_4px_30px_rgba(0,0,0,0.1)]
+                  transition hover:shadow-lg hover:-translate-y-0.5
+                  intersect-once intersect-quarter intersect-no-queue
+                  motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade
+                "
+                style={`animation-delay:${delay}ms`}
+              >
                 <div class="flex items-center gap-4">
                   {resolved ? (
                     <img
@@ -78,15 +96,16 @@ const grouped = ORDERED_GROUPS.map((group) => ({
                       alt={data.name}
                       width="80"
                       height="80"
-                      class="h-20 w-20 rounded-xl object-cover"
                       loading="lazy"
                       decoding="async"
+                      data-fade
+                      class="h-20 w-20 rounded-xl object-cover opacity-0 transition-opacity duration-700 ease-out will-change-[opacity]"
                     />
                   ) : (
                     <div class="h-20 w-20 rounded-xl bg-white/10" />
                   )}
-                  <div>
-                    <h3 class="text-xl font-semibold">{data.name}</h3>
+                  <div class="min-w-0">
+                    <h3 class="text-xl font-semibold truncate">{data.name}</h3>
                     {data.role && (
                       <p class="text-sm opacity-80">{data.role}</p>
                     )}
@@ -116,7 +135,7 @@ const grouped = ORDERED_GROUPS.map((group) => ({
                       href={`https://twitter.com/${data.twitter}`}
                       class="underline hover:no-underline"
                     >
-                      Twitter/X
+                      X
                     </a>
                   )}
                   {data.email && (
@@ -149,15 +168,30 @@ const grouped = ORDERED_GROUPS.map((group) => ({
   >
     <Fragment slot="title">
       Join us
-      <!-- Astro&nbsp;+&nbsp;<br class="block sm:hidden" /><span class="sm:whitespace-nowrap">Tailwind CSS</span> -->
     </Fragment>
-
-    <!-- <Fragment slot="subtitle"> -->
-    <!--   Be very surprised by these huge fake numbers you are seeing on this page. <br class="hidden md:inline" />Don't -->
-    <!--   waste more time! :P -->
-    <!-- </Fragment> -->
   </CallToAction>
 
+  <!-- SPA-safe image fade-in, same as grants -->
+  <script is:inline>
+    (function () {
+      function attachFade() {
+        const imgs = document.querySelectorAll('img[data-fade]');
+        for (const img of imgs) {
+          if (img.dataset.fadeBound) continue;
+          img.dataset.fadeBound = 'true';
+          const show = () => img.classList.remove('opacity-0');
+          if (img.complete) {
+            requestAnimationFrame(show); // cached
+          } else {
+            img.addEventListener('load', show, { once: true });
+            img.addEventListener('error', show, { once: true }); // ensure visible on error
+          }
+        }
+      }
+      attachFade();
+      document.addEventListener('astro:page-load', attachFade);
+      document.addEventListener('astro:after-swap', attachFade);
+    })();
+  </script>
 </PageLayout>
-
 

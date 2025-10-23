@@ -1,0 +1,165 @@
+---
+import Layout from "~/layouts/PageLayout.astro";
+import { getCollection } from "astro:content";
+// If your Features2 works without an explicit import, you can omit the next line.
+// If needed in your setup, uncomment it to ensure the intersect utilities run:
+// import "~/assets/scripts/intersect.ts";
+
+const title = "Activities";
+const description =
+  "Reading groups, seminar series, workshops, and other initiatives.";
+
+const records = (await getCollection("activities"))
+  .filter((e) => !e.data.draft)
+  .sort((a, b) => (a.data.weight ?? 0) - (b.data.weight ?? 0));
+
+const groups = { "reading-group": [], seminar: [], workshop: [], other: [] } as Record<string, typeof records>;
+for (const r of records) groups[r.data.type].push(r);
+
+const typeLabel: Record<string, string> = {
+  "reading-group": "Reading Groups",
+  seminar: "Seminar Series",
+  workshop: "Workshops",
+  other: "Other Activities",
+};
+
+const activityImages = import.meta.glob("~/assets/images/activities/*.{jpg,jpeg,png,webp,svg}", {
+  eager: true,
+  import: "default",
+});
+
+function resolveImagePath(path?: string | null) {
+  if (!path) return null;
+  const filename = path.split("/").pop();
+  const entry = Object.entries(activityImages).find(([p]) => p.endsWith("/" + filename));
+  const mod = entry?.[1] as any;
+  return typeof mod === "string" ? mod : mod?.src ?? null;
+}
+---
+
+<Layout title={title} description={description}>
+  <section class="relative mx-auto max-w-7xl px-6 py-16 sm:py-20">
+    <header class="mb-12 text-center">
+      <h1
+        class="text-3xl font-semibold tracking-tight sm:text-4xl
+               intersect-once intersect-quarter intersect-no-queue
+               motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+        style="animation-delay:120ms"
+      >
+        {title}
+      </h1>
+      <p
+        class="mt-3 text-base/7 text-muted-foreground
+               intersect-once intersect-quarter intersect-no-queue
+               motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+        style="animation-delay:180ms"
+      >
+        {description}
+      </p>
+    </header>
+
+    {Object.entries(groups).map(([type, entries], gi) =>
+      entries.length > 0 && (
+        <div class={gi > 0 ? "mb-12 pt-12 mt-12 border-t border-white/10" : "mb-12"} id={type}>
+          <h2
+            class="mb-4 text-xl font-semibold
+                   intersect-once intersect-quarter intersect-no-queue
+                   motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+            style="animation-delay:140ms"
+          >
+            {typeLabel[type]}
+          </h2>
+
+          <div class="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {entries.map(({ slug, data }, i) => {
+              const resolved = resolveImagePath(data.image);
+              const delay = Math.min(i * 70 + 100, 500); // gentle stagger per card
+              return (
+                <article
+                  class="
+                    group relative flex flex-col overflow-hidden
+                    rounded-lg border border-[#ffffff29] dark:border-white/10
+                    bg-white/80 dark:bg-slate-900/80
+                    shadow-[0_4px_30px_rgba(0,0,0,0.1)] backdrop-blur
+                    transition hover:shadow-lg hover:-translate-y-0.5
+                    intersect-once intersect-quarter intersect-no-queue
+                    motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade
+                  "
+                  style={`animation-delay:${delay}ms`}
+                >
+                  {resolved ? (
+                    <img
+                      src={resolved}
+                      alt={data.title}
+                      loading="lazy"
+                      decoding="async"
+                      data-fade
+                      class="h-40 w-full object-cover opacity-0 transition-opacity duration-700 ease-out will-change-[opacity]"
+                    />
+                  ) : (
+                    <div class="h-40 w-full bg-white/10" />
+                  )}
+
+                  <div class="flex flex-1 flex-col p-6">
+                    <h3 class="text-lg font-semibold group-hover:underline">
+                      <a href={`/activities/${slug}`}>{data.title}</a>
+                    </h3>
+
+                    <div class="mt-4 space-y-1 text-xs text-muted-foreground/80">
+                      {data.period && <p>🗓 {data.period}</p>}
+                      {data.location && <p>📍 {data.location}</p>}
+                    </div>
+
+                    {data.link && (
+                      <a
+                        href={data.link}
+                        target={data.link.startsWith("http") ? "_blank" : "_self"}
+                        rel="noopener noreferrer"
+                        class="mt-4 inline-block text-sm font-medium text-primary hover:underline"
+                      >
+                        Learn more →
+                      </a>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      )
+    )}
+
+    <div
+      class="mt-14 rounded-2xl border border-dashed border-border/60 p-6 text-sm text-muted-foreground
+             intersect-once intersect-quarter intersect-no-queue
+             motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+      style="animation-delay:160ms"
+    >
+      <p>To propose a new reading group or seminar, please contact the research management team.</p>
+    </div>
+  </section>
+
+  <!-- SPA-safe image fade-in (same approach as grants/people) -->
+  <script is:inline>
+    (function () {
+      function attachFade() {
+        const imgs = document.querySelectorAll('img[data-fade]');
+        for (const img of imgs) {
+          if (img.dataset.fadeBound) continue;
+          img.dataset.fadeBound = 'true';
+          const show = () => img.classList.remove('opacity-0');
+          if (img.complete) {
+            requestAnimationFrame(show); // cached image
+          } else {
+            img.addEventListener('load', show, { once: true });
+            img.addEventListener('error', show, { once: true }); // don't leave invisible on error
+          }
+        }
+      }
+      attachFade();
+      document.addEventListener('astro:page-load', attachFade);
+      document.addEventListener('astro:after-swap', attachFade);
+    })();
+  </script>
+</Layout>
+

@@ -2,7 +2,7 @@ site:
   name: Araya Research
   site: 'https://arayaresearch.netlify.app'
   base: '/'
-  trailingSlash: 'never'
+  trailingSlash: false
 
   googleSiteVerificationId: orcPxI47GSa-cRvY11tUe6iGg2IO_RPvnA1q95iEM3M
 

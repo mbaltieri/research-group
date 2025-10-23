@@ -2,7 +2,8 @@
 name: Shuntaro Sasai
 role: Chief Researcher Office
 group: Executive Team
-bio: "Cognitive Neuroscience, Consciousness, Brain-Machine Interface."
+bio: "Neurotechnology, Consciousness, Brain-Machine Interface."
+twitter: shuxnys
 image: /src/assets/images/people/shun.jpg
 order: 1
 ---

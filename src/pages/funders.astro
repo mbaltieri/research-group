@@ -1,0 +1,278 @@
+---
+import Layout from "~/layouts/PageLayout.astro";
+import { getCollection } from "astro:content";
+
+const title = "Funding Araya Research";
+const description = "";
+
+// Load and sort funders
+const records = (await getCollection("funders")).sort(
+  (a, b) => (a.data.weight ?? 0) - (b.data.weight ?? 0)
+);
+
+// Preload possible logo assets and resolve by filename
+const funderLogos = import.meta.glob(
+  "~/assets/images/funders/*.{svg,png,jpg,jpeg,webp}",
+  { eager: true, import: "default" }
+);
+
+function resolveLogo(logo?: string | null) {
+  if (!logo) return null;
+  const filename = logo.split("/").pop();
+  if (!filename) return null;
+  const entry = Object.entries(funderLogos).find(([p]) => p.endsWith("/" + filename));
+  if (!entry) return null;
+  const mod = entry[1] as any;
+  return typeof mod === "string" ? mod : mod?.src ?? null;
+}
+
+// Split using ONLY the boolean `active` field
+const current = records.filter((r) => r.data.active !== false);
+const old     = records.filter((r) => r.data.active === false);
+
+// Simple PI normalizer (string | string[] -> string | null)
+function piTextOf(pi: unknown): string | null {
+  if (!pi) return null;
+  return Array.isArray(pi)
+    ? pi.filter(Boolean).join(", ")
+    : (typeof pi === "string" ? (pi.trim() || null) : null);
+}
+
+// Year range helper: only show when both are present
+function yearsTextOf(d: any): string | null {
+  const s = d?.startYear;
+  const e = d?.endYear;
+  return typeof s === "number" && typeof e === "number" ? `${s}-${e}` : null;
+}
+---
+
+<Layout title={title} description={description}>
+  <section class="relative mx-auto max-w-7xl px-6 py-16 sm:py-20">
+    <header class="mb-12 text-center">
+      <h1
+        class="text-3xl font-semibold tracking-tight sm:text-4xl
+               intersect-once intersect-quarter intersect-no-queue
+               motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+        style="animation-delay:120ms"
+      >
+        {title}
+      </h1>
+      <p
+        class="mt-3 text-base/7 text-muted-foreground
+               intersect-once intersect-quarter intersect-no-queue
+               motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+        style="animation-delay:200ms"
+      >
+        {description}
+      </p>
+    </header>
+
+    {/* Current grants */}
+    {current.length > 0 && (
+      <>
+        <h3
+          class="mb-6 text-sm font-semibold uppercase tracking-wider text-muted-foreground
+                 intersect-once intersect-quarter intersect-no-queue
+                 motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+          style="animation-delay:160ms"
+        >
+          Active grants
+        </h3>
+
+        <div class="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {current.map(({ slug, data }) => {
+            const logoUrl = resolveLogo(data.logo);
+            const piText = piTextOf(data.pi);
+            const yearsText = yearsTextOf(data);
+            return (
+              <a
+                href={`/funders/${slug}`}
+                class="
+                  relative flex flex-col
+                  rounded-lg border border-[#ffffff29] dark:border-white/10
+                  bg-white/80 dark:bg-slate-900/80
+                  shadow-[0_4px_30px_rgba(0,0,0,0.1)] backdrop-blur
+                  p-6 transition
+                  hover:shadow-lg hover:-translate-y-0.5
+                  intersect-once intersect-quarter intersect-no-queue
+                  motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade
+                "
+              >
+                {/* Grid header: [image] [title+grant], meta aligned to column 2 */}
+                <div class="grid grid-cols-[56px_1fr] items-start gap-4">
+                  {/* Col 1: image */}
+                  <div class="col-start-1 row-start-1">
+                    {logoUrl ? (
+                      <img
+                        src={logoUrl}
+                        alt={`${data.title} logo`}
+                        loading="lazy"
+                        decoding="async"
+                        width="72"
+                        height="72"
+                        data-fade
+                        class="h-14 w-14 rounded-xl object-contain opacity-0 transition-opacity duration-700 ease-out will-change-[opacity]"
+                      />
+                    ) : (
+                      <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-muted text-xl font-semibold">
+                        {data.title.split(" ").map((w) => w[0]).slice(0, 3).join("")}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Col 2: title + grant */}
+                  <div class="col-start-2 row-start-1 min-w-0">
+                    <h2 class="truncate text-lg font-semibold group-hover:underline">{data.title}</h2>
+                    {data.grant && (
+                      <p class="grant-slot clamp-2 mt-1 text-sm text-muted-foreground">
+                        {data.grant}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Col 2: meta */}
+                  <div class="col-start-2 row-start-2">
+                    {piText && (
+                      <p class="text-sm font-medium text-foreground/90">
+                        Araya PI: {piText}
+                      </p>
+                    )}
+                    {yearsText && (
+                      <p class="mt-0.5 text-xs text-muted-foreground">{yearsText}</p>
+                    )}
+                    {data.area && (
+                      <p class="mt-0.5 text-xs text-muted-foreground/80">
+                        {data.area}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </>
+    )}
+
+    {/* Old grants */}
+    {old.length > 0 && (
+      <>
+        <div class="mt-24"></div>
+        <h3
+          class="mt-8 mb-6 text-sm font-semibold uppercase tracking-wider text-muted-foreground
+                 intersect-once intersect-quarter intersect-no-queue
+                 motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+          style="animation-delay:180ms"
+        >
+          Previous grants
+        </h3>
+
+        <div class="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {old.map(({ slug, data }) => {
+            const logoUrl = resolveLogo(data.logo);
+            const piText = piTextOf(data.pi);
+            const yearsText = yearsTextOf(data);
+            return (
+              <a
+                href={`/funders/${slug}`}
+                class="
+                  relative flex flex-col
+                  rounded-lg border border-[#ffffff29] dark:border-white/10
+                  bg-white/70 dark:bg-slate-900/70
+                  shadow-[0_4px_30px_rgba(0,0,0,0.1)] backdrop-blur
+                  p-6 opacity-90 transition
+                  hover:opacity-100 hover:shadow-lg hover:-translate-y-0.5
+                  intersect-once intersect-quarter intersect-no-queue
+                  motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade
+                "
+              >
+                <div class="grid grid-cols-[56px_1fr] items-start gap-4">
+                  {/* Col 1: image */}
+                  <div class="col-start-1 row-start-1">
+                    {logoUrl ? (
+                      <img
+                        src={logoUrl}
+                        alt={`${data.title} logo`}
+                        loading="lazy"
+                        decoding="async"
+                        width="72"
+                        height="72"
+                        data-fade
+                        class="h-14 w-14 rounded-xl object-contain opacity-0 transition-opacity duration-700 ease-out will-change-[opacity]"
+                      />
+                    ) : (
+                      <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-muted text-xl font-semibold">
+                        {data.title.split(" ").map((w) => w[0]).slice(0, 3).join("")}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Col 2: title + grant */}
+                  <div class="col-start-2 row-start-1 min-w-0">
+                    <h2 class="truncate text-lg font-semibold group-hover:underline">{data.title}</h2>
+                    {data.grant && (
+                      <p class="grant-slot clamp-2 mt-1 text-sm text-muted-foreground">
+                        {data.grant}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Col 2: meta */}
+                  <div class="col-start-2 row-start-2">
+                    {piText && (
+                      <p class="text-sm font-medium text-foreground/90">
+                        Araya PI: {piText}
+                      </p>
+                    )}
+                    {yearsText && (
+                      <p class="mt-0.5 text-xs text-muted-foreground">{yearsText}</p>
+                    )}
+                    {data.area && (
+                      <p class="mt-0.5 text-xs text-muted-foreground/80">
+                        {data.area}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </>
+    )}
+  </section>
+
+  {/* Fade-in handler for logos (initial + SPA navigations) */}
+  <script is:inline>
+    (function () {
+      function attachFade() {
+        const imgs = document.querySelectorAll('img[data-fade]');
+        for (const img of imgs) {
+          if (img.dataset.fadeBound) continue;
+          img.dataset.fadeBound = 'true';
+          const show = () => img.classList.remove('opacity-0');
+          if (img.complete) requestAnimationFrame(show);
+          else {
+            img.addEventListener('load', show, { once: true });
+            img.addEventListener('error', show, { once: true });
+          }
+        }
+      }
+      attachFade();
+      document.addEventListener('astro:page-load', attachFade);
+      document.addEventListener('astro:after-swap', attachFade);
+    })();
+  </script>
+</Layout>
+
+<style is:global>
+  /* Two-line clamp with a fixed height so the meta rows align across cards */
+  .clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .grant-slot { min-height: 2.5rem; } /* ~2 lines of .text-sm */
+</style>
+

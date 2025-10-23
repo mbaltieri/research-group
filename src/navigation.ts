@@ -35,16 +35,16 @@ export const headerData = {
         //   href: getPermalink('/projects'),
         // },
         {
-          text: 'Funders',
-          href: getPermalink('/research/funders'),
+          text: 'Grants',
+          href: getPermalink('/funders'),
         },
         {
           text: 'Publications',
-          href: getPermalink('/research/publications'),
+          href: getPermalink('/publications'),
         },
         {
-          text: 'Initiatives',
-          href: getPermalink('/research/activities'),
+          text: 'Events',
+          href: getPermalink('/activities'),
         },
     //   ],
     // },
@@ -208,10 +208,10 @@ export const footerData = {
     // },
 
   ],
-  secondaryLinks: [
-    { text: 'Terms', href: getPermalink('/terms') },
-    { text: 'Privacy Policy', href: getPermalink('/privacy') },
-  ],
+  // secondaryLinks: [
+  //   { text: 'Terms', href: getPermalink('/terms') },
+  //   { text: 'Privacy Policy', href: getPermalink('/privacy') },
+  // ],
   socialLinks: [
     { ariaLabel: 'X', icon: 'tabler:brand-x', href: 'https://x.com/ArayaGlobal' },
     { ariaLabel: 'Linkedin', icon: 'tabler:brand-linkedin', href: 'https://www.linkedin.com/company/araya-ai/' },

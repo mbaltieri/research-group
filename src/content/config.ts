@@ -1,6 +1,8 @@
 import { z, defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 
+import { ORDERED_GROUPS } from '~/roles.ts';
+
 const metadataDefinition = () =>
   z
     .object({
@@ -51,7 +53,8 @@ const people = defineCollection({
   schema: z.object({
     name: z.string(),
     role: z.string(),
-    group: z.enum(['Executive Team', 'Team Leaders', 'Researchers', 'Advisors']).default('Researchers'),
+    // group: z.enum(['Executive Team', 'Team Leaders', 'Researchers', 'Advisors']).default('Researchers'),
+    group: z.enum(ORDERED_GROUPS).default('Researchers'),
     bio: z.string().optional(),
     email: z.string().email().optional(),
     website: z.string().url().optional(),
@@ -99,11 +102,15 @@ const funders = defineCollection({
   type: "content",
   schema: z.object({
     title: z.string(), // Display name
+    pi: z.union([z.string(), z.array(z.string())]).optional(),
     website: z.string().url(), // External URL
     logo: z.string().optional(), // /images/funders/*.svg|png
     grant: z.string().optional(),
     area: z.string().optional(),
+    startYear: z.number().int().min(1900).max(2100).optional(), // Beginning year
+    endYear: z.number().int().min(1900).max(2100).optional(),   // Ending year
     weight: z.number().default(0), // Sort key (lower = first)
+    active: z.boolean().optional().default(true),
   }),
 });
 

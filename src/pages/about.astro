@@ -18,9 +18,14 @@ const publicationsCount = publications.filter(p => !p.data.draft).length;
 
 // Count all non-advisor entries
 const researchers = await getCollection("people");
+const excludedGroups = ["Advisors", "Science Communicators", "Interns", "Former Members"];
 const researchersCount = researchers.filter(
-  p => !p.data.draft && p.data.group !== "Advisors"
+  p => !p.data.draft && !excludedGroups.includes(p.data.group)
 ).length;
+
+// Count all active funders (active !== false)
+const funders = await getCollection("funders");
+const activeGrantsCount = funders.filter(f => f.data.active !== false).length;
 ---
 
 <Layout metadata={metadata}>
@@ -31,7 +36,7 @@ const researchersCount = researchers.filter(
     image={{
       // src: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
       src: '~/assets/images/araya-company.jpg',
-      alt: 'Caos Image',
+      alt: 'Araya logo at the office',
     }}
   >
     <Fragment slot="title">
@@ -50,11 +55,11 @@ const researchersCount = researchers.filter(
   <!-- Stats Widget ****************** -->
 
   <Stats
-    title="Statistics about us"
+    title=""
     stats={[
       { title: 'Publications', amount: publicationsCount },
       { title: 'Researchers', amount: researchersCount },
-      { title: 'Active Grants', amount: '12' },
+      { title: 'Active Grants', amount: activeGrantsCount },
       { title: 'Awards', amount: '24' },
     ]}
   />
@@ -88,7 +93,7 @@ const researchersCount = researchers.filter(
   <!-- Steps2 Widget ****************** -->
 
   <Steps2
-    title="Our areas"
+    title="Our research areas"
     subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sagittis, quam nec venenatis lobortis, mi risus tempus nulla, sed porttitor est nibh at nulla."
     isReversed={true}
     callToAction={{

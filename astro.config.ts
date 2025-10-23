@@ -15,7 +15,6 @@ import astrowind from './vendor/integration';
 
 import { readingTimeRemarkPlugin, responsiveTablesRehypePlugin, lazyImagesRehypePlugin } from './src/utils/frontmatter';
 
-import { defineConfig } from "astro/config";   // language support
 import { LOCALES, DEFAULT_LOCALE } from './src/i18n.config.ts';
 
 
@@ -27,6 +26,7 @@ const whenExternalScripts = (items: (() => AstroIntegration) | (() => AstroInteg
 
 export default defineConfig({
   output: 'static',
+  trailingSlash: 'never',   // explicit (AstroWind may override without Option A)
 
   integrations: [
     tailwind({
