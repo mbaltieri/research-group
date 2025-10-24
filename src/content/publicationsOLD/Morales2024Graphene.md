@@ -1,15 +1,14 @@
 ---
-{
-  "title": "Graphene shapes from quantum elasticity",
-  "authors": [
-    "Morales",
-    "P. A.",
-    "Castro-Villarreal",
-    "P."
-  ],
-  "year": 2024,
-  "venue": "Physical Review B.",
-  "type": "Other",
-  "doi": "10.1103/PhysRevB.110.195430"
-}
+title: "Graphene shapes from quantum elasticity"
+authors:
+  - "Morales"
+  - "A, P."
+  - "Castro-Villarreal"
+  - "P."
+venue: "Physical Review B"
+year: 2024
+doi: "10.1103/PhysRevB.110.195430"
+arxiv: ""
+pubdate: ""
+addedAt: "2024-12-30"
 ---

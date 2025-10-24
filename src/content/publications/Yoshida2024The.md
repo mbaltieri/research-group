@@ -1,22 +1,14 @@
 ---
-title: "The Extensible Multi-Robot Multi-Goal Manipulation Benchmark for Human-Robot Interfaces"
-authors:
-  - "Yoshida"
-  - "A."
-  - "Dossa"
-  - "J, R. F."
-  - "Sujit"
-  - "S."
-  - "Arulkumaran"
-  - "K."
-  - "Vincenzo"
-  - "D, M."
-  - "Kuwabara"
-  - "M."
-venue: "Supervised Autonomy Workshop"
+number: 126
+title: The Extensible Multi-Robot Multi-Goal Manipulation Benchmark for Human-Robot
+  Interfaces
+authors: Yoshida, A., Dossa, R. F. J., Sujit, S., Arulkumaran, K., Vincenzo, M. D.,
+  & Kuwabara, M.
 year: 2024
-doi: ""
-arxiv: ""
-pubdate: ""
-addedAt: "2024-12-09"
+venue: Supervised Autonomy Workshop
+url: https://sites.google.com/view/hri-workshop-icra2024/home?authuser=0
+type: Conference Proceeding
+language: en
+scholar: false
 ---
+

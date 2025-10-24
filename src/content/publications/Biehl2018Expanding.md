@@ -1,20 +1,39 @@
 ---
-title: "Expanding the Active Inference Landscape: More Intrinsic Motivations in the Perception-Action Loop"
-authors:
-  - "Biehl"
-  - "M."
-  - "Guckelsberger"
-  - "C."
-  - "Salge"
-  - "C."
-  - "Smith"
-  - "C, S."
-  - "Polani"
-  - "D."
-venue: "Frontiers in Neurorobotics"
+number: 18
+title: 'Expanding the Active Inference Landscape: More Intrinsic Motivations in the
+  Perception-Action Loop'
+authors: Biehl, M., Guckelsberger, C., Salge, C., Smith, S. C., & Polani, D.
 year: 2018
-doi: "10.3389/fnbot.2018.00045"
-arxiv: ""
-pubdate: ""
-addedAt: "2018-12-22"
+venue: Frontiers in Neurorobotics
+volume: '12.0'
+pages: '45'
+doi: https://doi.org/10.3389/fnbot.2018.00045
+url: https://www.frontiersin.org/articles/10.3389/fnbot.2018.00045/full
+type: Paper
+tags: Intrinsic motivation
+language: en
+scholar: true
+abstract: Active inference is an ambitious theory that treats perception, inference,
+  and action selection of autonomous agents under the heading of a single principle.
+  It suggests biologically plausible explanations for many cognitive phenomena, including
+  consciousness. In active inference, action selection is driven by an objective function
+  that evaluates possible future actions with respect to current, inferred beliefs
+  about the world. Active inference at its core is independent from extrinsic rewards,
+  resulting in a high level of robustness across e.g., different environments or agent
+  morphologies. In the literature, paradigms that share this independence have been
+  summarized under the notion of intrinsic motivations. In general and in contrast
+  to active inference, these models of motivation come without a commitment to particular
+  inference and action selection mechanisms. In this article, we study if the inference
+  and action selection machinery of active inference can also be used by alternatives
+  to the originally included intrinsic motivation. The perception-action loop explicitly
+  relates inference and action selection to the environment and agent memory, and
+  is consequently used as foundation for our analysis. We reconstruct the active inference
+  approach, locate the original formulation within, and show how alternative intrinsic
+  motivations can be used while keeping many of the original features intact. Furthermore,
+  we illustrate the connection to universal reinforcement learning by means of our
+  formalism. Active inference research may profit from comparisons of the dynamics
+  induced by alternative intrinsic motivations. Research on intrinsic motivations
+  may profit from an additional way to implement intrinsically motivated agents that
+  also share the biological plausibility of active inference.
 ---
+

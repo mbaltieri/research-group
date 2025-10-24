@@ -1,148 +1,94 @@
 ---
-import { getCollection } from 'astro:content';
-import PageLayout from '~/layouts/PageLayout.astro';
+import Layout from "~/layouts/PageLayout.astro";
+import { getCollection } from "astro:content";
 
-const pubs = await getCollection('publications');
+// Load & sort (newest first by addedAt/date/year)
+const pubs = (await getCollection("publications"))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => {
+    const ta = new Date(b.data.addedAt ?? b.data.date ?? `${b.data.year ?? 0}-01-01`).getTime();
+    const tb = new Date(a.data.addedAt ?? a.data.date ?? `${a.data.year ?? 0}-01-01`).getTime();
+    return ta - tb;
+  });
 
 // Helpers
-const toTime = (s?: string) => {
-  const t = s ? new Date(s).getTime() : 0;
-  return Number.isNaN(t) ? 0 : t;
-};
-const toYear = (y: unknown) =>
-  typeof y === 'number' ? y : parseInt(String(y ?? '0'), 10) || 0;
-
-function authorLine(authors: string[] = []) {
-  return authors.join(', ');
+const isInitial = (t: string) => /^[A-Za-z](\.)?$/.test(t.trim());
+function formatAuthors(auth: string | string[] | undefined) {
+  if (!auth) return "";
+  const arr = Array.isArray(auth) ? auth : [auth];
+  const norm = arr.map((a) =>
+    a
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/\b([A-Za-z])\b\.?/g, "$1.") // ensure single-dot initials
+  );
+  if (norm.length <= 2) return norm.join(" and ");
+  return norm.slice(0, -1).join(", ") + ", and " + norm[norm.length - 1];
 }
-
-function doiUrl(doi?: string) {
-  if (!doi) return null;
-  return /^https?:\/\//i.test(doi) ? doi : `https://doi.org/${doi}`;
-}
-function arxivUrl(id?: string) {
-  if (!id) return null;
-  return /^https?:\/\//i.test(id) ? id : `https://arxiv.org/abs/${id}`;
-}
-
-// Group by numeric year
-const byYear = new Map<number, typeof pubs>();
-for (const p of pubs) {
-  const y = toYear(p.data.year);
-  if (!byYear.has(y)) byYear.set(y, []);
-  byYear.get(y)!.push(p);
-}
-
-// Sort each year's items by last added (newest first)
-for (const list of byYear.values()) {
-  list.sort((a, b) => toTime(b.data.addedAt) - toTime(a.data.addedAt));
-}
-
-// Order years by the most recent addedAt within the year (newest first), fallback to calendar year
-const years = Array.from(byYear.keys()).sort((ya, yb) => {
-  const la = Math.max(...byYear.get(ya)!.map(e => toTime(e.data.addedAt)), 0);
-  const lb = Math.max(...byYear.get(yb)!.map(e => toTime(e.data.addedAt)), 0);
-  if (lb !== la) return lb - la;
-  return yb - ya;
-});
+const doiUrl = (doi?: string) =>
+  doi ? `https://doi.org/${doi.replace(/^https?:\/\/(dx\.)?doi\.org\//, "")}` : undefined;
 ---
 
-<PageLayout title="Publications">
-  <section class="mx-auto max-w-7xl px-6 py-16">
-    <h1
-      class="mb-6 text-4xl font-bold tracking-tight
-             intersect-once intersect-quarter intersect-no-queue
-             motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
-      style="animation-delay:120ms"
-    >
-      Publications
-    </h1>
+<Layout title="Publications" description="List of publications from our group">
+  <section>
+    <!-- Keep your own section/container classes as-is around here if you had them -->
+    {pubs.map((p) => {
+      const authors = formatAuthors(p.data.authors);
+      const showDetails = Boolean(
+        p.data.abstract || p.data.doi || p.data.external || p.data.href || p.data.venue
+      );
+      const _doi = doiUrl(p.data.doi);
 
-    <!-- Year quick-jump -->
-    <nav
-      class="mb-10 flex flex-wrap gap-3 text-sm opacity-90
-             intersect-once intersect-quarter intersect-no-queue
-             motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
-      style="animation-delay:180ms"
-    >
-      {years.map((y) => (
-        <a href={`#y-${y}`} class="rounded-full border px-3 py-1 hover:bg-white/10">{y}</a>
-      ))}
-    </nav>
+      return (
+        /* ⬇️ Put YOUR existing item wrapper classes on this <details> if you had any.
+           If you had a fade on expand, keep those classes on the inner elements you already use.
+           We do not set any colors/backgrounds/opacities here. */
+        <details>
+          {/* ⬇️ SUMMARY: paste your existing "collapsed row" markup INSIDE this summary.
+              Do NOT change its classes; keep exactly what you had before so colors/fades remain.
+              The only class added is list-none to hide the default marker. Remove if undesired. */}
+          <summary class="list-none">
+            {/* START: your original collapsed item content (title/authors/venue/year line, badge, etc.) */}
+            <div>
+              <div>
+                <h3>{p.data.title}</h3>
+                {p.data.badge && <span>{p.data.badge}</span>}
+              </div>
+              <div>
+                {authors && <span>{authors}</span>}
+                {(authors && (p.data.venue || p.data.year)) && <span> · </span>}
+                {p.data.venue && <span>{p.data.venue}</span>}
+                {p.data.venue && p.data.year && <span>, </span>}
+                {p.data.year && <span>{p.data.year}</span>}
+                {/* DOI intentionally hidden here */}
+              </div>
+            </div>
+            {/* END: your original collapsed item content */}
+          </summary>
 
-    {years.map((y, idx) => (
-      <section id={`y-${y}`} class={idx > 0 ? 'pt-12 mt-12 border-t border-white/10' : ''}>
-        <h2
-          class="mb-6 text-2xl font-semibold tracking-tight
-                 intersect-once intersect-quarter intersect-no-queue
-                 motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
-          style="animation-delay:140ms"
-        >
-          {y}
-        </h2>
+          {/* ⬇️ DETAILS: shows when expanded. Add YOUR fade class here if you had one (e.g., animate-fadeIn).
+              We do not add any style classes so your theme remains unchanged. */}
+          {showDetails && (
+            <div>
+              {p.data.abstract && <p>{p.data.abstract}</p>}
 
-        <ul class="space-y-6">
-          {byYear.get(y)!.map(({ data }, i) => {
-            const links = {
-              doi: doiUrl(data.doi),
-              arxiv: arxivUrl(data.arxiv),
-              pdf: data.pdf,
-              code: data.code,
-              slides: data.slides,
-              poster: data.poster,
-            };
-
-            return (
-              <li
-                class="
-                  rounded-lg border border-[#ffffff29] dark:border-white/10
-                  bg-white/80 dark:bg-slate-900/80
-                  p-6 backdrop-blur shadow-[0_4px_30px_rgba(0,0,0,0.1)]
-                  transition hover:shadow-lg hover:-translate-y-0.5
-                  intersect-once intersect-quarter intersect-no-queue
-                  motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade
-                "
-                style={`animation-delay:${Math.min(i * 60 + 100, 480)}ms`}
-              >
-                <h3 class="text-lg font-semibold leading-snug">
-                  {data.title}
-                </h3>
-
-                <p class="mt-1 text-sm opacity-90">
-                  {authorLine(data.authors)}
-                  {data.venue ? ` — ${data.venue}` : ''}
-                  {data.type ? ` · ${data.type}` : ''}
-                  {data.year ? ` · ${data.year}` : ''}
-                </p>
-
-                {data.abstract && (
-                  <p class="mt-3 text-sm leading-6 opacity-90">{data.abstract}</p>
+              <div>
+                {_doi && (
+                  <a href={_doi} target="_blank" rel="noopener noreferrer">
+                    DOI
+                  </a>
                 )}
-
-                <div class="mt-4 flex flex-wrap gap-2 text-xs">
-                  {links.doi && <a href={links.doi} class="rounded-full border px-2.5 py-1 hover:bg-white/10">DOI</a>}
-                  {links.arxiv && <a href={links.arxiv} class="rounded-full border px-2.5 py-1 hover:bg-white/10">arXiv</a>}
-                  {links.pdf && <a href={links.pdf} class="rounded-full border px-2.5 py-1 hover:bg-white/10">PDF</a>}
-                  {links.code && <a href={links.code} class="rounded-full border px-2.5 py-1 hover:bg-white/10">Code</a>}
-                  {links.slides && <a href={links.slides} class="rounded-full border px-2.5 py-1 hover:bg-white/10">Slides</a>}
-                  {links.poster && <a href={links.poster} class="rounded-full border px-2.5 py-1 hover:bg-white/10">Poster</a>}
-                  {data.award && (
-                    <span class="rounded-full border px-2.5 py-1">🏅 {data.award}</span>
-                  )}
-                </div>
-
-                {data.tags && data.tags.length > 0 && (
-                  <div class="mt-3 flex flex-wrap gap-2 text-[11px] opacity-80">
-                    {data.tags.map((t) => (
-                      <span class="rounded-full border px-2 py-0.5">{t}</span>
-                    ))}
-                  </div>
+                {p.data.external && (
+                  <a href={p.data.external} target="_blank" rel="noopener noreferrer">
+                    View paper
+                  </a>
                 )}
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-    ))}
+                {p.data.href && !p.data.external && <a href={p.data.href}>More details</a>}
+              </div>
+            </div>
+          )}
+        </details>
+      );
+    })}
   </section>
-</PageLayout>
+</Layout>

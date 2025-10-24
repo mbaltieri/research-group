@@ -68,33 +68,52 @@ const people = defineCollection({
 const publications = defineCollection({
   type: 'content',
   schema: z.object({
+    number: z.number().optional(),          // from Excel "No."
     title: z.string(),
-    authors: z.array(z.string()),           // ["Doe, J.", "Smith, A."]
+    authors: z.union([
+      z.string(),                           // allow plain string (fallback)
+      z.array(z.string()),                  // preferred ["Doe, J.", "Smith, A."]
+    ]),
     year: z.number(),
-    venue: z.string().optional(),           // "NeurIPS", "Nature", etc.
+
+    venue: z.string().optional(),           // "Nature", "NeurIPS", etc.
+    volume: z.string().optional(),
+    issue: z.string().optional(),
+    pages: z.string().optional(),
+
     type: z.enum([
       'Journal',
-      'Conference',
+      'Conference Proceeding',
       'Workshop',
       'Preprint',
       'Book',
       'Thesis',
       'Other',
+      'Paper',                              // to support your Excel "Paper"
+      'Poster Presentation',                // extra Excel values
+      'Book Chapter'
     ]).default('Preprint'),
+
     abstract: z.string().optional(),
 
-    // Links (any subset)
-    doi: z.string().optional(),             // "10.48550/arXiv.2401.12345" or journal DOI
-    arxiv: z.string().optional(),           // "2401.12345"
-    pdf: z.string().optional(),             // e.g., "/papers/your-paper.pdf" (place under /public)
+    doi: z.string().optional(),             // full URL or bare DOI
+    url: z.string().optional(),             // for "Publication link"
+    arxiv: z.string().optional(),
+    pdf: z.string().optional(),
     code: z.string().url().optional(),
     slides: z.string().url().optional(),
     poster: z.string().url().optional(),
 
-    award: z.string().optional(),           // "Best Paper Award", etc.
-    tags: z.array(z.string()).optional(),
+    award: z.string().optional(),
+    tags: z.union([
+      z.string(),
+      z.array(z.string()),
+    ]).optional(),
+    language: z.string().optional(),
+    scholar: z.boolean().optional(),
+
     featured: z.boolean().default(false),
-    order: z.number().default(999),         // manual ordering inside same year
+    order: z.number().default(999),
   }),
 });
 

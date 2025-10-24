@@ -1,12 +1,15 @@
 ---
-title: "研究開発における新たな科学運営モデル"
-authors:
-  - "Hamada"
-  - "T, H."
-venue: "Jxiv, JST"
+number: 107
+title: 研究開発における新たな科学運営モデル
+authors: Hamada, H. T.
 year: 2023
-doi: "10.51094/jxiv.510"
-arxiv: ""
-pubdate: ""
-addedAt: "2023-12-13"
+venue: Jxiv, JST
+doi: https://doi.org/10.51094/jxiv.510
+url: https://jxiv.jst.go.jp/index.php/jxiv/preprint/view/510
+type: Paper
+language: en
+scholar: true
+abstract: 科学はイノベーションの基盤となり産業発展の礎を担ってきた。しかし、イノベーションの停滞、近年研究開発のコスト増加、学術雑誌の高騰など様々な課題も指摘されてきた。近年、これらの課題を個別のテーマで解決しようとする民間組織が増えてきている。その中には新たな科学運営モデルを提案する重点研究組織(FRO)、民間型高等研究計画局(PARPA)、グラント型自律分散型組織(DAO)も出現している。本報告では、新たな科学運営モデルを、技術移転の「死の谷」の観点から整理する。まずメタサイエンスムーブメントについて背景を説明し、新たな科学エコシステムについて紹介する。次に、技術移転政策であるSmall
+  Business Innovation Research(SBIR)について概観し、技術移転の死の谷について紹介する。そして、既存・新規の科学運営モデルについて技術移転の観点から整理する。これによりメタサイエンスムーブメントを理解することに寄与したい。
 ---
+
