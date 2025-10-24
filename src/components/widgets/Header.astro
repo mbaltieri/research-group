@@ -35,6 +35,9 @@ export interface Props {
 
   /** NEW: force show/hide language switcher per render (overrides auto) */
   showLanguageSwitcher?: boolean;
+
+  /** NEW: social icons for the top header */
+  socialLinks?: Array<Link>;
 }
 
 const {
@@ -48,6 +51,7 @@ const {
   showRssFeed = false,
   position = 'center',
   showLanguageSwitcher, // may be undefined
+  socialLinks = [], // 👈 NEW
 } = Astro.props;
 
 const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
@@ -161,20 +165,37 @@ const shouldShowLang =
       ]}
     >
       <div class="items-center flex justify-between w-full md:w-auto">
-        <div class="flex">
+        <div class="flex items-center">
           {showToggleTheme && <ToggleTheme iconClass="w-6 h-6 md:w-5 md:h-5 md:inline-block" />}
-          {
-            showRssFeed && (
-              <a
-                class="text-muted dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center"
-                aria-label="RSS Feed"
-                href={getAsset('/rss.xml')}
-              >
-                <Icon name="tabler:rss" class="w-5 h-5" />
-              </a>
-            )
-          }
+          <!-- { -->
+          <!--   showRssFeed && ( -->
+          <!--     <a -->
+          <!--       class="text-muted dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center" -->
+          <!--       aria-label="RSS Feed" -->
+          <!--       href={getAsset('/rss.xml')} -->
+          <!--     > -->
+          <!--       <Icon name="tabler:rss" class="w-5 h-5" /> -->
+          <!--     </a> -->
+          <!--   ) -->
+          <!-- } -->
+
+          {socialLinks?.length > 0 && (
+            <div class="hidden md:flex items-center ml-3 gap-3">
+              {socialLinks.map((item) => (
+                <a
+                  href={item.href}
+                  aria-label={item.ariaLabel}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-muted hover:text-link transition-colors"
+                >
+                  <Icon name={item.icon} class="w-5 h-5" />
+                </a>
+              ))}
+            </div>
+          )}
         </div>
+
         {
           actions?.length ? (
             <span class="ml-4 rtl:ml-0 rtl:mr-4">

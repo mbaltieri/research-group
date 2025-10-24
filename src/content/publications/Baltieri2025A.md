@@ -1,33 +1,36 @@
 ---
-number: 151
-title: A Bayesian Interpretation of the Internal Model Principle
-authors: Baltieri, M., Biehl, M., Capucci, M., & Virgo, N.
+number: 174
+title: A coalgebraic perspective on predictive processing
+authors: Baltieri, M., Torresan, F., & Nakai, T.
 year: 2025
 venue: arXiv
-doi: https://doi.org/10.48550/arXiv.2503.00511
-url: https://arxiv.org/abs/2503.00511
+doi: https://doi.org/10.48550/arXiv.2508.16877
+url: https://arxiv.org/abs/2508.16877
 type: Paper
 language: en
 scholar: true
-abstract: The internal model principle, originally proposed in the theory of control
-  of linear systems, nowadays represents a more general class of results in control
-  theory and cybernetics. The central claim of these results is that, under suitable
-  assumptions, if a system (a controller) can regulate against a class of external
-  inputs (from the environment), it is because the system contains a model of the
-  system causing these inputs, which can be used to generate signals counteracting
-  them. Similar claims on the role of internal models appear also in cognitive science,
-  especially in modern Bayesian treatments of cognitive agents, often suggesting that
-  a system (a human subject, or some other agent) models its environment to adapt
-  against disturbances and perform goal-directed behaviour. It is however unclear
-  whether the Bayesian internal models discussed in cognitive science bear any formal
-  relation to the internal models invoked in standard treatments of control theory.
-  Here, we first review the internal model principle and present a precise formulation
-  of it using concepts inspired by categorical systems theory. This leads to a formal
-  definition of `model' generalising its use in the internal model principle. Although
-  this notion of model is not a priori related to the notion of Bayesian reasoning,
-  we show that it can be seen as a special case of possibilistic Bayesian filtering.
-  This result is based on a recent line of work formalising, using Markov categories,
-  a notion of `interpretation', describing when a system can be interpreted as performing
-  Bayesian filtering on an outside world in a consistent way.
+abstract: Predictive processing and active inference posit that the brain is a system
+  performing Bayesian inference on the environment. By virtue of this, a prominent
+  interpretation of predictive processing states that the generative model (a POMDP)
+  encoded by the brain synchronises with the generative process (another POMDP) representing
+  the environment while trying to explain what hidden properties of the world generated
+  its sensory input. In this view, the brain is thought to become a copy of the environment.
+  This claim has however been disputed, stressing the fact that a structural copy,
+  or isomorphism as it is at times invoked to be, is not an accurate description of
+  this process since the environment is necessarily more complex than the brain, and
+  what matters is not the capacity to exactly recapitulate the veridical causal structure
+  of the world. In this work, we make parts of this counterargument formal by using
+  ideas from the theory of coalgebras, an abstract mathematical framework for dynamical
+  systems that brings together work from automata theory, concurrency theory, probabilistic
+  processes and other fields. To do so, we cast generative model and process, in the
+  form of POMDPs, as coalgebras, and use maps between them to describe a form of consistency
+  that goes beyond mere structural similarity, giving the necessary mathematical background
+  to describe how different processes can be seen as behaviourally, rather than structurally,
+  equivalent, i.e. how they can be seen as emitting the same observations, and thus
+  minimise prediction error, over time without strict assumptions about structural
+  similarity. In particular, we will introduce three standard notions of equivalence
+  from the literature on coalgebras, evaluating them in the context of predictive
+  processing and identifying the one closest to claims made by proponents of this
+  framework.
 ---
 

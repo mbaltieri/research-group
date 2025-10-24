@@ -1,50 +1,28 @@
 ---
-number: 117
-title: A Pragmatic Look  at Deep Imitation Learning
-authors: Arulkumaran, K., & Lillrank, D. O.
+number: 125
+title: A Comparison of Visual and Auditory EEG Interfaces for Robot Multi-stage Task
+  Control
+authors: Arulkumaran, K., Vincenzo, M. D.,  Dossa R. F. J., Akiyama, S., Lillrank,
+  D. O., Sato, M., Tomeoka, K., & Sasai, S.
 year: 2024
-venue: Asian Conference on Machine Learning
-pages: 58-73
-url: https://proceedings.mlr.press/v222/arulkumaran24a.html
-type: Conference Proceeding
+venue: Frontiers in Robotics and AI
+volume: '11.0'
+doi: https://doi.org/10.3389/frobt.2024.1329270
+url: https://www.frontiersin.org/articles/10.3389/frobt.2024.1329270/full
+type: Paper
 language: en
 scholar: true
-abstract: 'The introduction of the generative adversarial imitation learning (GAIL)
-  algorithm has
-
-  spurred the development of scalable imitation learning approaches using deep neural
-  networks. Many of the algorithms that followed used a similar procedure, combining
-  on-policy
-
-  actor-critic algorithms with inverse reinforcement learning. More recently there
-  have been
-
-  an even larger breadth of approaches, most of which use off-policy algorithms. However,
-
-  with the breadth of algorithms, everything from datasets to base reinforcement learning
-  algorithms to evaluation settings can vary, making it difficult to fairly compare
-  them. In this
-
-  work we re-implement 6 different IL algorithms, updating 3 of them to be off-policy,
-  base
-
-  them on a common off-policy algorithm (SAC), and evaluate them on a widely-used
-  expert
-
-  trajectory dataset (D4RL) for the most common benchmark (MuJoCo). After giving all
-
-  algorithms the same hyperparameter optimisation budget, we compare their results
-  for a
-
-  range of expert trajectories. In summary, GAIL, with all of its improvements, consistently
-
-  performs well across a range of sample sizes, AdRIL is a simple contender that performs
-
-  well with one important hyperparameter to tune, and behavioural cloning remains
-  a strong
-
-  baseline when data is more plentiful.
-
-  Keywords: imitation learning; inverse reinforcement learning; benchmarking'
+abstract: Shared autonomy holds promise for assistive robotics, whereby physically-impaired
+  people can direct robots to perform various tasks for them. However, a robot that
+  is capable of many tasks also introduces many choices for the user, such as which
+  object or location should be the target of interaction. In the context of non-invasive
+  brain-computer interfaces for shared autonomy—most commonly electroencephalography-based—the
+  two most common choices are to provide either auditory or visual stimuli to the
+  user—each with their respective pros and cons. Using the oddball paradigm, we designed
+  comparable auditory and visual interfaces to speak/display the choices to the user,
+  and had users complete a multi-stage robotic manipulation task involving location
+  and object selection. Users displayed differing competencies—and preferences—for
+  the different interfaces, highlighting the importance of considering modalities
+  outside of vision when constructing human-robot interfaces.
 ---
 

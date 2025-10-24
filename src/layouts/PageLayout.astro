@@ -13,7 +13,6 @@ const url = Astro.url;
 const all = locales();
 const canonical = new URL(url.pathname + url.search, Astro.site).toString();
 
-
 import type { MetaData } from '~/types';
 
 export interface Props {
@@ -28,8 +27,14 @@ const { metadata } = Astro.props;
   <!--   <Announcement /> -->
   <!-- </slot> -->
   <slot name="header">
-    <Header {...headerData} isSticky showToggleTheme />
-    <!-- showRssFeed  -->
+    <!-- Explicitly pass socialLinks (redundant if already in headerData, but clearer) -->
+    <Header
+      {...headerData}
+      socialLinks={headerData.socialLinks}
+      isSticky
+      showToggleTheme
+      <!-- showRssFeed -->
+    />
   </slot>
   <main>
     <slot />
@@ -40,7 +45,6 @@ const { metadata } = Astro.props;
 </Layout>
 
 <head>
-  <!-- ...your existing tags... -->
   <link rel="canonical" href={canonical} />
 
   {all.map((loc) => (
@@ -51,7 +55,6 @@ const { metadata } = Astro.props;
     />
   ))}
 
-  <!-- Optional x-default pointing to your default-locale page -->
   <link
     rel="alternate"
     hreflang="x-default"
