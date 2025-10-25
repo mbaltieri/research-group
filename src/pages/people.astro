@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import PageLayout from "~/layouts/PageLayout.astro";
 import CallToAction from '~/components/widgets/CallToAction.astro';
+import Headline from '~/components/blog/Headline.astro';
 import { ORDERED_GROUPS } from '~/roles.ts';
 
 // Grab every image in src/assets/images/people and get their resolved URL
@@ -33,15 +34,18 @@ const grouped = ORDERED_GROUPS.map((group) => ({
 ---
 
 <PageLayout title="People">
-  <section class="mx-auto max-w-7xl px-6 py-16">
-    <h1
-      class="mb-10 text-4xl font-bold tracking-tight
-             intersect-once intersect-quarter intersect-no-queue
-             motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
-      style="animation-delay:120ms"
-    >
-      Our team
-    </h1>
+  <!-- <section class="mx-auto max-w-7xl px-6 py-16"> -->
+  <!--   <h1 -->
+  <!--     class="mb-10 text-4xl font-bold tracking-tight -->
+  <!--            intersect-once intersect-quarter intersect-no-queue -->
+  <!--            motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade" -->
+  <!--     style="animation-delay:120ms" -->
+  <!--   > -->
+  <!-- </h1> -->
+  <section class="px-6 sm:px-6 py-12 sm:py-16 lg:py-20 mx-auto max-w-7xl">
+    <Headline>
+      Our Team
+    </Headline>
 
     <nav
       class="mb-10 flex flex-wrap gap-3 text-sm opacity-90
@@ -49,14 +53,14 @@ const grouped = ORDERED_GROUPS.map((group) => ({
              motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
       style="animation-delay:180ms"
     >
-      {grouped.map((g) => (
-        <a
-          href={`#${g.label.toLowerCase()}`}
-          class="rounded-full border px-3 py-1 hover:bg-white/10"
-        >
-          {g.label}
-        </a>
-      ))}
+      <!-- {grouped.map((g) => ( -->
+      <!--   <a -->
+      <!--     href={`#${g.label.toLowerCase()}`} -->
+      <!--     class="rounded-full border dark:border-white/10 px-3 py-1 hover:bg-white/10" -->
+      <!--   > -->
+      <!--     {g.label} -->
+      <!--   </a> -->
+      <!-- ))} -->
     </nav>
 
     {grouped.map((g, idx) => (

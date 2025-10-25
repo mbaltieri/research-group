@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import PageLayout from '~/layouts/PageLayout.astro';
+import Headline from '~/components/blog/Headline.astro';
 
 const pubs = await getCollection('publications');
 
@@ -74,15 +75,27 @@ const years = Array.from(byYear.keys()).sort((ya, yb) => {
 ---
 
 <PageLayout title="Publications">
-  <section class="pubs mx-auto max-w-7xl px-6 py-16">
-    <h1
-      class="mb-6 text-4xl font-bold tracking-tight
-             intersect-once intersect-quarter intersect-no-queue
-             motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
-      style="animation-delay:120ms"
-    >
+  <!-- <section class="pubs mx-auto max-w-7xl px-6 py-16"> -->
+  <!--   <h1 -->
+  <!--     class="mb-6 text-4xl font-bold tracking-tight -->
+  <!--            intersect-once intersect-quarter intersect-no-queue -->
+  <!--            motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade" -->
+  <!--     style="animation-delay:120ms" -->
+  <!--   > -->
+  <!--     Publications -->
+  <!--   </h1> -->
+  <section class="pubs px-6 sm:px-6 py-12 sm:py-16 lg:py-20 mx-auto max-w-7xl">
+    <!-- <Headline -->
+    <!--   subtitle="Find us also on Google Scholar" -->
+    <!-- > -->
+    <!--   Publications -->
+    <!-- </Headline> -->
+    <Headline>
       Publications
-    </h1>
+      <Fragment slot="subtitle">
+        Find us also on <a href="https://scholar.google.co.jp/citations?user=jDmnwwEAAAAJ&hl" target="_blank" class="hover:text-primary">Google Scholar</a>
+      </Fragment>
+    </Headline>
 
     <!-- Year quick-jump -->
     <nav
@@ -94,7 +107,7 @@ const years = Array.from(byYear.keys()).sort((ya, yb) => {
       {years.map((y) => (
         <a
           href={`#y-${y}`}
-          class="rounded-full border px-3 py-1 hover:bg-white/10"
+          class="rounded-full border dark:border-white/10 px-3 py-1 hover:bg-white/10"
           >{y}</a
         >
       ))}
@@ -155,7 +168,7 @@ const years = Array.from(byYear.keys()).sort((ya, yb) => {
                         {links.doi && (
                           <a
                             href={links.doi}
-                            class="rounded-full border px-2.5 py-1 text-xs hover:bg-white/10"
+                            class="rounded-full border px-2.5 py-1 text-xs hover:bg-white/10 dark:border-white/10"
                             style="float:right;margin-left:12px;"
                             >DOI</a
                           >
@@ -167,16 +180,16 @@ const years = Array.from(byYear.keys()).sort((ya, yb) => {
 
                       <p class="mt-1 text-sm opacity-90">
                         {authorLine(data.authors)}
-                        {data.venue ? ` — ${data.venue}` : ''}
-                        {data.type ? ` · ${data.type}` : ''}
-                        {data.year ? ` · ${data.year}` : ''}
+                        {data.venue ? <em> - {data.venue}</em> : ''}
+                        {/* {data.type ? ` · ${data.type}` : ''} */}
+                        {data.year ? `(${data.year})` : ''}
                       </p>
                     </summary>
 
                     <div class="mt-3 fade-disclosure">
                       {data.abstract && (
                         <p class="text-sm leading-6 opacity-90">
-                          Abstract:<br />
+                          <b>Abstract</b>:<br />
                           {data.abstract}
                         </p>
                       )}
@@ -360,8 +373,8 @@ const years = Array.from(byYear.keys()).sort((ya, yb) => {
   <!-- Script with slower opacity fade -->
   <script is:inline>
     (function () {
-      var DURATION_HEIGHT = 320;
-      var DURATION_OPACITY = 400; // slower fade
+      var DURATION_HEIGHT = 520;
+      var DURATION_OPACITY = 520; // slower fade
       var EASING = 'ease';
 
       function animateOpen(details, content) {
@@ -380,35 +393,69 @@ const years = Array.from(byYear.keys()).sort((ya, yb) => {
         content.style.height = target;
         content.style.opacity = '1';
         content.style.transform = 'translateY(0)';
-        function done() {
+        function done(e) {
+          // Only finalize when the height animation completes
+          if (e.target !== content || e.propertyName !== 'height') return;
+          content.removeEventListener('transitionend', done);
           content.style.transition = 'none';
           content.style.height = 'auto';
-          content.removeEventListener('transitionend', done);
+
+          // Mark logical state so the next click will CLOSE
+          details.dataset.collapsed = 'false';
+          var s = details.querySelector('summary');
+          if (s) s.setAttribute('aria-expanded', 'true');
         }
         content.addEventListener('transitionend', done);
       }
 
+      
       function animateClose(details, content) {
+        // lock current box
         content.style.transition = 'none';
         content.style.overflow = 'hidden';
-        content.style.height = content.scrollHeight + 'px';
+
+        // use rendered height (more stable than scrollHeight on close)
+        var startH = content.getBoundingClientRect().height;
+        var startW = content.getBoundingClientRect().width; // optional: freeze width
+
+        content.style.width  = startW + 'px';   // optional but helps on all cards
+        content.style.height = startH + 'px';
         content.style.opacity = '1';
         content.style.transform = 'translateY(0)';
         void content.offsetHeight;
+
+        // animate collapse (keep your timings/easing)
         content.style.transition =
           'height ' + DURATION_HEIGHT + 'ms ' + EASING + ', ' +
           'opacity ' + DURATION_OPACITY + 'ms ' + EASING + ', ' +
           'transform ' + DURATION_HEIGHT + 'ms ' + EASING;
+
         content.style.height = '0px';
         content.style.opacity = '0';
         content.style.transform = 'translateY(-4px)';
-        function done() {
-          details.removeAttribute('open');
-          content.style.transition = 'none';
-          content.removeEventListener('transitionend', done);
+
+        function onEnd(e) {
+          if (e.target !== content || e.propertyName !== 'height') return;
+          content.removeEventListener('transitionend', onEnd);
+
+          // IMPORTANT: do NOT remove 'open' — leave <details> open permanently.
+          // Just keep the content collapsed at height:0.
+          requestAnimationFrame(function () {
+            content.style.transition = 'none';
+            content.style.width  = '';         // unfreeze width
+            content.style.height = '0px';
+            content.style.opacity = '0';
+            content.style.transform = 'translateY(-4px)';
+
+            // mark logical state for accessibility / next toggle
+            details.dataset.collapsed = 'true';
+            var summary = details.querySelector('summary');
+            if (summary) summary.setAttribute('aria-expanded', 'false');
+          });
         }
-        content.addEventListener('transitionend', done);
+        content.addEventListener('transitionend', onEnd);
       }
+
 
       function setup(details) {
         var summary = details.querySelector('summary');
@@ -421,14 +468,18 @@ const years = Array.from(byYear.keys()).sort((ya, yb) => {
         content.style.opacity = isOpen ? '1' : '0';
         content.style.transform = isOpen ? 'translateY(0)' : 'translateY(-4px)';
 
-        summary.addEventListener('click', function (ev) {
-          ev.preventDefault();
-          if (details.hasAttribute('open')) {
-            animateClose(details, content);
-          } else {
-            animateOpen(details, content);
-          }
-        });
+        
+      summary.addEventListener('click', function (ev) {
+        ev.preventDefault();
+        // collapsed if height is 0 OR we marked it as collapsed
+        var collapsed = details.dataset.collapsed === 'true' || content.offsetHeight === 0;
+        if (collapsed) {
+          animateOpen(details, content);
+        } else {
+          animateClose(details, content);
+        }
+      });
+
       }
 
       if (document.readyState === 'loading') {

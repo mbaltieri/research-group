@@ -1,9 +1,8 @@
 ---
 import Layout from "~/layouts/PageLayout.astro";
+import Headline from '~/components/blog/Headline.astro';
 import { getCollection } from "astro:content";
 
-const title = "Funding Araya Research";
-const description = "";
 
 // Load and sort funders
 const records = (await getCollection("funders")).sort(
@@ -46,27 +45,31 @@ function yearsTextOf(d: any): string | null {
 }
 ---
 
-<Layout title={title} description={description}>
-  <section class="relative mx-auto max-w-7xl px-6 py-16 sm:py-20">
-    <header class="mb-12 text-center">
-      <h1
-        class="text-3xl font-semibold tracking-tight sm:text-4xl
-               intersect-once intersect-quarter intersect-no-queue
-               motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
-        style="animation-delay:120ms"
-      >
-        {title}
-      </h1>
-      <p
-        class="mt-3 text-base/7 text-muted-foreground
-               intersect-once intersect-quarter intersect-no-queue
-               motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
-        style="animation-delay:200ms"
-      >
-        {description}
-      </p>
-    </header>
-
+<Layout>
+  <!-- <section class="relative mx-auto max-w-7xl px-6 py-16 sm:py-20"> -->
+  <!--   <header class="mb-12 text-center"> -->
+  <!--     <h1 -->
+  <!--       class="text-3xl font-semibold tracking-tight sm:text-4xl -->
+  <!--              intersect-once intersect-quarter intersect-no-queue -->
+  <!--              motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade" -->
+  <!--       style="animation-delay:120ms" -->
+  <!--     > -->
+  <!--     <Headline> -->
+  <!--       Funding Araya Research -->
+  <!--     </Headline> -->
+  <!--     </h1> -->
+  <!--     <p -->
+  <!--       class="mt-3 text-base/7 text-muted-foreground -->
+  <!--              intersect-once intersect-quarter intersect-no-queue -->
+  <!--              motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade" -->
+  <!--       style="animation-delay:200ms" -->
+  <!--     > -->
+  <!--     </p> -->
+  <!--   </header> -->
+  <section class="px-6 sm:px-6 py-12 sm:py-16 lg:py-20 mx-auto max-w-7xl">
+    <Headline>
+      Funding Araya Research
+    </Headline>
     {/* Current grants */}
     {current.length > 0 && (
       <>

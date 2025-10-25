@@ -31,17 +31,17 @@ const metadata = {
 import { getCollection } from 'astro:content';
 
 // Load 9 most recent publications (non-draft), sort by year then date if present
-const publications = (await getCollection('publications'))
-  .filter((p) => !p.data.draft)
-  .sort((a, b) => {
-    const by = b.data.year ?? 0;
-    const ay = a.data.year ?? 0;
-    if (by !== ay) return by - ay;
-    const bd = b.data.date ? new Date(b.data.date).getTime() : 0;
-    const ad = a.data.date ? new Date(a.data.date).getTime() : 0;
-    return bd - ad;
-  })
-.slice(0, 9);
+// const publications = (await getCollection('publications'))
+//   .filter((p) => !p.data.draft)
+//   .sort((a, b) => {
+//     const by = b.data.year ?? 0;
+//     const ay = a.data.year ?? 0;
+//     if (by !== ay) return by - ay;
+//     const bd = b.data.date ? new Date(b.data.date).getTime() : 0;
+//     const ad = a.data.date ? new Date(a.data.date).getTime() : 0;
+//     return bd - ad;
+//   })
+// .slice(0, 9);
 
 // Choose how many to show on the homepage:
 const N = 9;
@@ -73,6 +73,20 @@ const recentPubItems = _pubs.map((p) => ({
   external: p.data.url || p.data.arxiv,   // optional extra link
 }));
 
+// Count all non-draft publication entries
+const publications = await getCollection("publications");
+const publicationsCount = publications.filter(p => !p.data.draft).length;
+
+// Count all non-advisor entries
+const researchers = await getCollection("people");
+const excludedGroups = ["Advisors", "Science Communicators", "Interns", "Former Members"];
+const researchersCount = researchers.filter(
+  p => !p.data.draft && !excludedGroups.includes(p.data.group)
+).length;
+
+// Count all active funders (active !== false)
+const funders = await getCollection("funders");
+const activeGrantsCount = funders.filter(f => f.data.active !== false).length;
 ---
 
 <Layout metadata={metadata}>
@@ -112,6 +126,16 @@ const recentPubItems = _pubs.map((p) => ({
       <!-- Blogs. -->
     </Fragment>
   </Hero>
+
+  <Stats
+    title=""
+    stats={[
+      { title: 'Publications', amount: publicationsCount },
+      { title: 'Active Researchers', amount: researchersCount },
+      { title: 'Active Grants', amount: activeGrantsCount },
+      { title: 'Citations', amount: '> 5000' },
+    ]}
+  />
 
   <!-- Note Widget ******************* -->
 
@@ -525,14 +549,14 @@ const recentPubItems = _pubs.map((p) => ({
 
   <!-- Stats Widget ****************** -->
 
-  <Stats
-    stats={[
-      { title: 'Downloads', amount: '132K' },
-      { title: 'Stars', amount: '24.8K' },
-      { title: 'Forks', amount: '10.3K' },
-      { title: 'Users', amount: '48.4K' },
-    ]}
-  />
+  <!-- <Stats -->
+  <!--   stats={[ -->
+  <!--     { title: 'Downloads', amount: '132K' }, -->
+  <!--     { title: 'Stars', amount: '24.8K' }, -->
+  <!--     { title: 'Forks', amount: '10.3K' }, -->
+  <!--     { title: 'Users', amount: '48.4K' }, -->
+  <!--   ]} -->
+  <!-- /> -->
 
   <!-- CallToAction Widget *********** -->
 
