@@ -70,7 +70,7 @@ const activeGrantsCount = funders.filter(f => f.data.active !== false).length;
 
   <Steps2
     title="Our mission"
-    subtitle="Maecenas eu tellus eget est scelerisque lacinia et a diam. Aliquam velit lorem, vehicula id fermentum et, rhoncus et purus. Nulla facilisi. Vestibulum malesuada lacus."
+    subtitle="What drives us."
     items={[
       {
         title: 'Consciousness in biological and artificial systems',
@@ -85,7 +85,7 @@ const activeGrantsCount = funders.filter(f => f.data.active !== false).length;
       {
         title: 'Interpretable AI',
         description:
-        'To build tranparent and interpretable AIs, and provide formal tools to understand existing black-box models.'
+        'To build tranparent and interpretable AIs, and provide formal frameworks and methods to understand existing black-box models.'
       },
     ]}
   />
@@ -94,24 +94,25 @@ const activeGrantsCount = funders.filter(f => f.data.active !== false).length;
 
   <Steps2
     title="Our research areas"
-    subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sagittis, quam nec venenatis lobortis, mi risus tempus nulla, sed porttitor est nibh at nulla."
+    subtitle="What we build."
     isReversed={true}
     callToAction={{
-      text: 'See more',
-      href: '/',
+      text: 'See our publications',
+      href: '/publications',
     }}
     items={[
       {
-        title: 'Consciousness Science',
-        description: 'Scientific study of consciousness and cognition in biological systems.',
-        icon: 'tabler:brain',
-      },
-      {
-        title: 'AI',
-        description: 'Systematic study and implementation of SOTA models.',
+        title: 'Artificial Intelligence',
+        description: 'Building tools to implement trustworthy AI models.',
         icon: 'tabler:ai',
       },
+
       {
+        title: 'Artificial Consciousness',
+        description: 'Applying methods from the scientific study of consciousness to build AIs aligned with human values.',
+        icon: 'tabler:brain',
+      },
+            {
         title: 'Neurotech',
         description: 'Working on the next generation of BMI technology.',
         icon: 'tabler:circuit-battery',
