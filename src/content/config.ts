@@ -137,24 +137,27 @@ const activities = defineCollection({
   type: "content",
   schema: z.object({
     title: z.string(),
-    type: z.enum(["reading-group", "seminar", "workshop", "other"]),
+    type: z.enum(["workshop", "readinggroup", "seminar", "talk", "other"]),
     period: z.string().optional(),       // e.g. "2024–2025" or "Ongoing"
     location: z.string().optional(),
     link: z.string().url().optional(),   // external info or signup
     image: z.string().optional(),        // /images/activities/*.jpg|png|svg
     weight: z.number().default(0),       // sort key
     draft: z.boolean().default(false),
+    date: z.string().optional(),          // "2025-01-20"
+    speakers: z.array(z.string()).optional(), // ["Alice Foo", "Bob Bar"]
+    tags: z.union([z.array(z.string()), z.string()]).optional(), // reuse if you want
   }),
 });
 
 const postCollection = defineCollection({
   loader: glob({ pattern: ['*.md', '*.mdx'], base: 'src/data/post' }),
   schema: z.object({
+    title: z.string(),
     publishDate: z.date().optional(),
     updateDate: z.date().optional(),
     draft: z.boolean().optional(),
 
-    title: z.string(),
     excerpt: z.string().optional(),
     image: z.string().optional(),
 

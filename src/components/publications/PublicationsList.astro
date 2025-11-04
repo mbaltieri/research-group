@@ -1,0 +1,256 @@
+---
+import type { YearGroup } from '~/lib/publications';
+import { authorLine, toStringArray, doiLikeUrl, arxivUrl } from '~/lib/publications';
+
+const { years, groups } = Astro.props as {
+  years: number[];
+  groups: YearGroup[];
+};
+---
+
+<section class="pubs px-6 sm:px-6 py-12 sm:py-16 lg:py-20 mx-auto max-w-7xl">
+  <nav
+    class="mb-10 flex flex-wrap gap-3 text-sm opacity-90
+           intersect-once intersect-quarter intersect-no-queue
+           motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+    style="animation-delay:180ms"
+  >
+    {years.map((y) => (
+      <a href={`#y-${y}`} class="rounded-full border dark:border-white/10 px-3 py-1 hover:bg-white/10">{y}</a>
+    ))}
+  </nav>
+
+  {groups.map((g, idx) => (
+    <section id={`y-${g.year}`} class={idx > 0 ? 'pt-12 mt-12 border-t border-white/10' : ''}>
+      <h2
+        class="mb-6 text-2xl font-semibold tracking-tight
+               intersect-once intersect-quarter intersect-no-queue
+               motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+        style="animation-delay:140ms"
+      >
+        {g.year}
+      </h2>
+
+      <ul class="space-y-6">
+        {g.items.map(({ data }, i) => {
+          const links = {
+            doi: doiLikeUrl(data.doi, data.url),
+            arxiv: arxivUrl(data.arxiv),
+            pdf: data.pdf,
+            code: data.code,
+            slides: data.slides,
+            poster: data.poster,
+          };
+
+          const hasDetails =
+            Boolean(data.abstract) ||
+            Boolean(links.doi || links.arxiv || links.pdf || links.code || links.slides || links.poster);
+
+          return (
+            <li
+              class="rounded-lg border border-[#ffffff29] dark:border-white/10
+                     bg-white/80 dark:bg-slate-900/80 p-6 backdrop-blur shadow-[0_4px_30px_rgba(0,0,0,0.1)]
+                     transition hover:shadow-lg hover:-translate-y-0.5
+                     intersect-once intersect-quarter intersect-no-queue
+                     motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+              style={`animation-delay:${Math.min(i * 60 + 100, 480)}ms`}
+            >
+              {hasDetails ? (
+                <details class="group">
+                  <summary class="list-none cursor-pointer">
+                    <div class="relative">
+                      {links.doi && (
+                        <a href={links.doi} class="rounded-full border px-2.5 py-1 text-xs hover:bg-white/10 dark:border-white/10" style="float:right;margin-left:12px;">DOI</a>
+                      )}
+                      <h3 class="text-lg font-semibold leading-snug">
+                        {data.title}
+                      </h3>
+                    </div>
+
+                    <p class="mt-1 text-sm opacity-90">
+                      {authorLine(data.authors)}
+                      {data.venue ? <em> - {data.venue}</em> : ''}
+                      {data.year ? `(${data.year})` : ''}
+                    </p>
+                  </summary>
+
+                  <div class="mt-3 fade-disclosure">
+                    {data.abstract && (
+                      <p class="text-sm leading-6 opacity-90">
+                        <b>Abstract</b>:<br />
+                        {data.abstract}
+                      </p>
+                    )}
+
+                    {(links.arxiv || links.pdf || links.code || links.slides || links.poster || data.award) && (
+                      <div class="mt-4 flex flex-wrap gap-2 text-xs">
+                        {links.arxiv && <a href={links.arxiv} class="rounded-full border px-2.5 py-1 hover:bg-white/10">arXiv</a>}
+                        {links.pdf && <a href={links.pdf} class="rounded-full border px-2.5 py-1 hover:bg-white/10">PDF</a>}
+                        {links.code && <a href={links.code} class="rounded-full border px-2.5 py-1 hover:bg-white/10">Code</a>}
+                        {links.slides && <a href={links.slides} class="rounded-full border px-2.5 py-1 hover:bg-white/10">Slides</a>}
+                        {links.poster && <a href={links.poster} class="rounded-full border px-2.5 py-1 hover:bg-white/10">Poster</a>}
+                        {data.award && <span class="rounded-full border px-2.5 py-1">🏅 {data.award}</span>}
+                      </div>
+                    )}
+
+                    {(() => {
+                      const tags = toStringArray(data.tags);
+                      return tags.length > 0 ? (
+                        <div class="mt-3 flex flex-wrap gap-2 text-[11px] opacity-80">
+                          {tags.map((t) => <span class="rounded-full border px-2 py-0.5">{t}</span>)}
+                        </div>
+                      ) : null;
+                    })()}
+                  </div>
+                </details>
+              ) : (
+                <>
+                  <div class="relative">
+                    {links.doi && (
+                      <a href={links.doi} class="rounded-full border px-2.5 py-1 text-xs hover:bg-white/10" style="float:right;margin-left:12px;">DOI</a>
+                    )}
+                    <h3 class="text-lg font-semibold leading-snug">{data.title}</h3>
+                  </div>
+
+                  <p class="mt-1 text-sm opacity-90">
+                    {authorLine(data.authors)}
+                    {data.venue ? ` — ${data.venue}` : ''}
+                    {data.type ? ` · ${data.type}` : ''}
+                    {data.year ? ` · ${data.year}` : ''}
+                  </p>
+
+                  {data.abstract && <p class="mt-3 text-sm leading-6 opacity-90">{data.abstract}</p>}
+
+                  {(links.arxiv || links.pdf || links.code || links.slides || links.poster || data.award) && (
+                    <div class="mt-4 flex flex-wrap gap-2 text-xs">
+                      {links.arxiv && <a href={links.arxiv} class="rounded-full border px-2.5 py-1 hover:bg-white/10">arXiv</a>}
+                      {links.pdf && <a href={links.pdf} class="rounded-full border px-2.5 py-1 hover:bg-white/10">PDF</a>}
+                      {links.code && <a href={links.code} class="rounded-full border px-2.5 py-1 hover:bg-white/10">Code</a>}
+                      {links.slides && <a href={links.slides} class="rounded-full border px-2.5 py-1 hover:bg-white/10">Slides</a>}
+                      {links.poster && <a href={links.poster} class="rounded-full border px-2.5 py-1 hover:bg-white/10">Poster</a>}
+                      {data.award && <span class="rounded-full border px-2.5 py-1">🏅 {data.award}</span>}
+                    </div>
+                  )}
+
+                  {(() => {
+                    const tags = toStringArray(data.tags);
+                    return tags.length > 0 ? (
+                      <div class="mt-3 flex flex-wrap gap-2 text-[11px] opacity-80">
+                        {tags.map((t) => <span class="rounded-full border px-2 py-0.5">{t}</span>)}
+                      </div>
+                    ) : null;
+                  })()}
+                </>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  ))}
+</section>
+
+<style>
+  .pubs summary::-webkit-details-marker { display: none; }
+  .pubs summary::marker { content: ""; }
+  .pubs details .fade-disclosure { will-change: opacity, transform, height; }
+</style>
+
+<script is:inline>
+  (function () {
+    var DURATION_HEIGHT = 520;
+    var DURATION_OPACITY = 520;
+    var EASING = 'ease';
+
+    function animateOpen(details, content) {
+      if (!details.hasAttribute('open')) details.setAttribute('open', '');
+      content.style.transition = 'none';
+      content.style.overflow = 'hidden';
+      content.style.height = '0px';
+      content.style.opacity = '0';
+      content.style.transform = 'translateY(-4px)';
+      void content.offsetHeight;
+      var target = content.scrollHeight + 'px';
+      content.style.transition =
+        'height ' + DURATION_HEIGHT + 'ms ' + EASING + ', ' +
+        'opacity ' + DURATION_OPACITY + 'ms ' + EASING + ', ' +
+        'transform ' + DURATION_HEIGHT + 'ms ' + EASING;
+      content.style.height = target;
+      content.style.opacity = '1';
+      content.style.transform = 'translateY(0)';
+      function done(e) {
+        if (e.target !== content || e.propertyName !== 'height') return;
+        content.removeEventListener('transitionend', done);
+        content.style.transition = 'none';
+        content.style.height = 'auto';
+        details.dataset.collapsed = 'false';
+        var s = details.querySelector('summary');
+        if (s) s.setAttribute('aria-expanded', 'true');
+      }
+      content.addEventListener('transitionend', done);
+    }
+
+    function animateClose(details, content) {
+      content.style.transition = 'none';
+      content.style.overflow = 'hidden';
+      var startH = content.getBoundingClientRect().height;
+      var startW = content.getBoundingClientRect().width;
+      content.style.width  = startW + 'px';
+      content.style.height = startH + 'px';
+      content.style.opacity = '1';
+      content.style.transform = 'translateY(0)';
+      void content.offsetHeight;
+      content.style.transition =
+        'height ' + DURATION_HEIGHT + 'ms ' + EASING + ', ' +
+        'opacity ' + DURATION_OPACITY + 'ms ' + EASING + ', ' +
+        'transform ' + DURATION_HEIGHT + 'ms ' + EASING;
+      content.style.height = '0px';
+      content.style.opacity = '0';
+      content.style.transform = 'translateY(-4px)';
+      function onEnd(e) {
+        if (e.target !== content || e.propertyName !== 'height') return;
+        content.removeEventListener('transitionend', onEnd);
+        requestAnimationFrame(function () {
+          content.style.transition = 'none';
+          content.style.width  = '';
+          content.style.height = '0px';
+          content.style.opacity = '0';
+          content.style.transform = 'translateY(-4px)';
+          details.dataset.collapsed = 'true';
+          var summary = details.querySelector('summary');
+          if (summary) summary.setAttribute('aria-expanded', 'false');
+        });
+      }
+      content.addEventListener('transitionend', onEnd);
+    }
+
+    function setup(details) {
+      var summary = details.querySelector('summary');
+      var content = details.querySelector('.fade-disclosure');
+      if (!summary || !content) return;
+      var isOpen = details.hasAttribute('open');
+      content.style.overflow = 'hidden';
+      content.style.height = isOpen ? 'auto' : '0px';
+      content.style.opacity = isOpen ? '1' : '0';
+      content.style.transform = isOpen ? 'translateY(0)' : 'translateY(-4px)';
+      summary.addEventListener('click', function (ev) {
+        ev.preventDefault();
+        var collapsed = details.dataset.collapsed === 'true' || content.offsetHeight === 0;
+        if (collapsed) {
+          animateOpen(details, content);
+        } else {
+          animateClose(details, content);
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.pubs details').forEach(setup);
+      });
+    } else {
+      document.querySelectorAll('.pubs details').forEach(setup);
+    }
+  })();
+</script>
+

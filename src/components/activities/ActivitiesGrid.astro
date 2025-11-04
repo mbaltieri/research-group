@@ -1,0 +1,88 @@
+---
+import { typeLabel } from "~/lib/activities";
+import type { Activity } from "~/lib/activities";
+
+// Props: the already-grouped activities
+const { groups } = Astro.props as {
+  groups: Record<"workshop"|"readinggroup"|"seminar"|"other", Activity[]>;
+};
+
+// Image resolver (server-side import glob)
+const activityImages = import.meta.glob("~/assets/images/activities/*.{jpg,jpeg,png,webp,svg}", {
+  eager: true,
+  import: "default",
+});
+
+function resolveImagePath(path?: string | null) {
+  if (!path) return null;
+  const filename = path.split("/").pop();
+  const entry = Object.entries(activityImages).find(([p]) => p.endsWith("/" + filename));
+  const mod = entry?.[1] as any;
+  return typeof mod === "string" ? mod : mod?.src ?? null;
+}
+---
+
+{Object.entries(groups).map(([type, entries], gi) =>
+  entries.length > 0 && (
+    <div class={gi > 0 ? "mb-12 pt-12 mt-12 border-t border-white/10" : "mb-12"} id={type}>
+      <h2
+        class="mb-4 text-xl font-semibold
+               intersect-once intersect-quarter intersect-no-queue
+               motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+        style="animation-delay:140ms"
+      >
+        {typeLabel[type]}
+      </h2>
+
+      <div class="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {entries.map(({ slug, data }, i) => {
+          const resolved = resolveImagePath(data.image);
+          const delay = Math.min(i * 70 + 100, 500);
+          return (
+            <article
+              class="
+                group relative cursor-pointer flex flex-col overflow-hidden
+                rounded-lg border border-[#ffffff29] dark:border-white/10
+                bg-white/80 dark:bg-slate-900/80
+                shadow-[0_4px_30px_rgba(0,0,0,0.1)] backdrop-blur
+                transition hover:shadow-lg hover:-translate-y-0.5
+                intersect-once intersect-quarter intersect-no-queue
+                motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade
+              "
+              style={`animation-delay:${delay}ms`}
+            >
+              <a
+                href={`/activities/${slug}`}
+                aria-label={data.title}
+                class="absolute inset-0 z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              />
+              {resolved ? (
+                <img
+                  src={resolved}
+                  alt={data.title}
+                  loading="lazy"
+                  decoding="async"
+                  data-fade
+                  class="h-40 w-full object-cover opacity-0 transition-opacity duration-700 ease-out will-change-[opacity]"
+                />
+              ) : (
+                <div class="h-40 w-full bg-white/10" />
+              )}
+
+              <div class="relative z-0 flex flex-1 flex-col p-6 pointer-events-none">
+                <h3 class="text-lg font-semibold group-hover:underline line-clamp-2 min-h-[3.5rem]">
+                  {data.title}
+                </h3>
+                <div class="mt-4 space-y-1 text-xs text-muted-foreground/80">
+                  {data.period && <p>🗓 {data.period}</p>}
+                  {data.location && <p>📍 {data.location}</p>}
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  )
+)}
+

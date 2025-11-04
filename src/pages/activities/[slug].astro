@@ -14,21 +14,55 @@ if (!entry) throw new Error(`Activity not found: ${slug}`);
 const { Content } = await entry.render();
 const { title, type, period, location, link, image } = entry.data;
 
-const typeLabel = {
-  "reading-group": "Reading Group",
+const typeLabel: Record<string, string> = {
+  talk: "Talk",
+  readinggroup: "Reading Group",
   seminar: "Seminar",
   workshop: "Workshop",
   other: "Activity",
 };
+
+const activityImages = import.meta.glob("~/assets/images/activities/*.{jpg,jpeg,png,webp,svg}", {
+  eager: true,
+  import: "default",
+});
+function resolveImagePath(path?: string | null) {
+  if (!path) return null;
+  const filename = path.split("/").pop();
+  const m = Object.entries(activityImages).find(([p]) => p.endsWith("/" + filename));
+  const mod = m?.[1] as any;
+  return typeof mod === "string" ? mod : mod?.src ?? null;
+}
+const resolvedImage = resolveImagePath(image) ?? image ?? null;
+
+const metaBits = [
+  typeLabel[type] ?? "",
+  period ? `· ${period}` : "",
+  location ? `· ${location}` : "",
+].filter(Boolean);
+const metaDescription = metaBits.join(" ");
 ---
 
-<Layout title={title} description={`${typeLabel[type]}${period ? ` · ${period}` : ""}`}>
+<Layout title={title} description={metaDescription}>
   <section class="relative mx-auto max-w-3xl px-6 py-12 sm:py-16">
     <a href="/activities" class="text-sm text-muted-foreground hover:underline">← Back to activities</a>
 
-    <header class="mt-4 mb-8 flex items-center gap-4">
-      {image ? (
-        <img src={image} alt={title} width="80" height="80" class="h-16 w-16 rounded-xl object-cover" />
+    <header
+      class="mt-4 mb-8 flex items-center gap-4
+             intersect-once intersect-quarter intersect-no-queue
+             motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+      style="animation-delay:120ms"
+    >
+      {resolvedImage ? (
+        <img
+          src={resolvedImage}
+          alt={title}
+          width="80"
+          height="80"
+          class="h-16 w-16 rounded-xl object-cover"
+          loading="lazy"
+          decoding="async"
+        />
       ) : (
         <div class="flex h-16 w-16 items-center justify-center rounded-xl bg-muted text-xl font-semibold">
           {title.split(" ").map((w) => w[0]).slice(0, 3).join("")}
@@ -37,13 +71,18 @@ const typeLabel = {
       <div>
         <h1 class="text-2xl font-semibold">{title}</h1>
         <p class="mt-1 text-sm text-muted-foreground">
-          <span>{typeLabel[type]}</span>
+          <span>{typeLabel[type] ?? "Activity"}</span>
           {period && <span class="ml-2">· {period}</span>}
           {location && <span class="ml-2">· {location}</span>}
         </p>
         {link && (
           <p class="mt-1 text-sm">
-            <a href={link} target={link.startsWith("http") ? "_blank" : "_self"} rel="noopener noreferrer" class="underline">
+            <a
+              href={link}
+              target={link.startsWith("http") ? "_blank" : "_self"}
+              rel="noopener noreferrer"
+              class="underline"
+            >
               External link
             </a>
           </p>
@@ -51,9 +90,47 @@ const typeLabel = {
       </div>
     </header>
 
-    <article class="prose prose-invert max-w-none">
+    <article
+      class="prose prose-slate max-w-none text-slate-800 dark:prose-invert dark:text-slate-200 prose-headings:text-slate-900 dark:prose-headings:text-white
+             prose-img:mx-auto prose-img:max-w-md prose-img:rounded-lg prose-img:shadow
+             intersect-once intersect-quarter intersect-no-queue
+             motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+      style="animation-delay:160ms"
+    >
       <Content />
     </article>
   </section>
-</Layout>
 
+  <script is:inline>
+    (() => {
+      const q = '[class*="intersect-"],[class*="intersect:"]';
+      let io = null;
+
+      function init() {
+        const els = Array.from(document.querySelectorAll(q))
+          .filter(el => !el.dataset.intersectBound);
+        if (!els.length) return;
+
+        if (!io) {
+          io = new IntersectionObserver((entries) => {
+            for (const e of entries) {
+              if (!e.isIntersecting) continue;
+              const el = e.target;
+              el.classList.add('intersect');
+              if (el.classList.contains('intersect-once')) io.unobserve(el);
+            }
+          }, { threshold: 0.25, rootMargin: '0px 0px -10% 0px' });
+        }
+
+        for (const el of els) {
+          el.dataset.intersectBound = '1';
+          io.observe(el);
+        }
+      }
+
+      init();
+      document.addEventListener('astro:page-load', init);
+      document.addEventListener('astro:after-swap', init);
+    })();
+  </script>
+</Layout>

@@ -46,18 +46,17 @@ import { getCollection } from 'astro:content';
 // Choose how many to show on the homepage:
 const N = 9;
 
-// Load & sort by (year DESC, then date DESC)
+
+// Load & sort by number DESC (highest first), then take N
 const _pubs = (await getCollection("publications"))
   .filter((p) => !p.data.draft)
   .sort((a, b) => {
-    const by = b.data.year ?? 0;
-    const ay = a.data.year ?? 0;
-    if (by !== ay) return by - ay;
-    const bd = b.data.date ? new Date(b.data.date).getTime() : 0;
-    const ad = a.data.date ? new Date(a.data.date).getTime() : 0;
-    return bd - ad;
+    const bn = typeof b.data.number === "number" ? b.data.number : -Infinity;
+    const an = typeof a.data.number === "number" ? a.data.number : -Infinity;
+    return bn - an;
   })
   .slice(0, N);
+
 
 // Map to widget items
 const recentPubItems = _pubs.map((p) => ({
@@ -131,8 +130,9 @@ const activeGrantsCount = funders.filter(f => f.data.active !== false).length;
     title=""
     stats={[
       { title: 'Publications', amount: publicationsCount },
-      { title: 'Active Researchers', amount: researchersCount },
+      // { title: 'Active Researchers', amount: researchersCount },
       { title: 'Active Grants', amount: activeGrantsCount },
+      { title: 'h-index', amount: '35'},
       { title: 'Citations', amount: '> 5000' },
     ]}
   />
@@ -423,12 +423,8 @@ const activeGrantsCount = funders.filter(f => f.data.active !== false).length;
 
 <PublicationsShowcase
   title="Recent Publications"
-  subtitle=""
   items={recentPubItems}
-  viewAllHref="/research/publications"
-  dense={true}
-  showCovers={false}
-  background={true}
+  limit={9}
 />
 
 

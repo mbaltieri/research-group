@@ -1,0 +1,99 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { normalizeSpeakers } from '~/lib/talks';
+
+// Props
+const { years, groups, filterBy } = Astro.props as {
+  years: number[];
+  groups: { year: number; items: CollectionEntry<'activities'>[] }[];
+  filterBy?: string;
+};
+
+// Helper: simple image resolver (matches same logic used elsewhere)
+const activityImages = import.meta.glob(
+  '~/assets/images/activities/*.{jpg,jpeg,png,webp,svg}',
+  { eager: true, import: 'default' }
+);
+
+function resolveImagePath(path?: string | null) {
+  if (!path) return null;
+  const filename = path.split('/').pop();
+  const entry = Object.entries(activityImages).find(([p]) =>
+    p.endsWith('/' + filename)
+  );
+  const mod = entry?.[1] as any;
+  return typeof mod === 'string' ? mod : mod?.src ?? null;
+}
+
+function matchesFilter(entry: CollectionEntry<'activities'>) {
+  if (!filterBy) return true;
+  const speakers = normalizeSpeakers(entry.data.speakers);
+  return speakers.some((s) => s.toLowerCase() === filterBy.toLowerCase());
+}
+---
+
+{groups.map((g, gi) => {
+  const items = g.items.filter(matchesFilter);
+  if (!items.length) return null;
+  return (
+    <section
+      id={`y-${g.year}`}
+      class={(gi > 0 ? 'pt-10 mt-10 border-t border-white/10 ' : '') +
+        'intersect-once intersect-quarter intersect-no-queue ' +
+        'motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'}
+      style="animation-delay:140ms"
+    >
+      <h2 class="mb-4 text-2xl font-semibold">{g.year || 'Undated'}</h2>
+
+      <ul class="space-y-4">
+        {items.map((t, i) => (
+          <li
+            class="relative rounded-lg border dark:border-white/10 p-5
+                   transition hover:shadow-lg hover:-translate-y-0.5
+                   intersect-once intersect-quarter intersect-no-queue
+                   motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+            style={`animation-delay:${Math.min(i * 70 + 100, 500)}ms`}
+          >
+            <a
+              href={`/activities/${t.slug}`}
+              aria-label={t.data.title}
+              class="absolute inset-0 z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            />
+
+            <div class="flex items-start gap-4">
+              {(() => {
+                const thumb = resolveImagePath(t.data.image);
+                return thumb ? (
+                  <img
+                    src={thumb}
+                    alt={t.data.title}
+                    class="w-16 h-16 object-cover rounded-md flex-shrink-0"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : (
+                  <div class="w-16 h-16 rounded-md bg-white/10 flex-shrink-0" />
+                );
+              })()}
+
+              <div>
+                <h3 class="text-lg font-semibold leading-snug">{t.data.title}</h3>
+                <p class="text-sm opacity-90">
+                  {t.data.date
+                    ? new Date(t.data.date).toLocaleDateString()
+                    : ''}
+                  {t.data.location ? ` · ${t.data.location}` : ''}
+                </p>
+                {normalizeSpeakers(t.data.speakers).length > 0 && (
+                  <p class="text-sm opacity-90">
+                    Speakers: {normalizeSpeakers(t.data.speakers).join(', ')}
+                  </p>
+                )}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+})}
