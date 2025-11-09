@@ -32,7 +32,7 @@ const member = Astro.url.searchParams.get('member') ?? undefined;
       style="animation-delay:140ms"
       id="talks"
     >
-      Presentations, Panels and other Events
+      Where you can find us
     </h2>
 
     {talkMembers.length > 0 && (
@@ -51,14 +51,14 @@ const member = Astro.url.searchParams.get('member') ?? undefined;
       </div>
     )}
 
-    <TalksList years={talkYears} groups={talkGroups} filterBy={member} />
+    <TalksList years={talkYears} groups={talkGroups} filterBy={member} groupByYear={false}/>
 
-    <div
-      class="mt-14 rounded-2xl border border-dashed border-border/60 p-6 text-sm text-muted-foreground
-             intersect-once intersect-quarter intersect-no-queue
-             motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
-      style="animation-delay:160ms"
-    />
+    <!-- <div -->
+    <!--   class="mt-14 rounded-2xl border border-dashed border-border/60 p-6 text-sm text-muted-foreground -->
+    <!--          intersect-once intersect-quarter intersect-no-queue -->
+    <!--          motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade" -->
+    <!--   style="animation-delay:160ms" -->
+    <!-- /> -->
   </section>
 
   <script is:inline>

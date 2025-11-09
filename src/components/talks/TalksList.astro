@@ -3,10 +3,11 @@ import type { CollectionEntry } from 'astro:content';
 import { normalizeSpeakers } from '~/lib/talks';
 
 // Props
-const { years, groups, filterBy } = Astro.props as {
+const { years, groups, filterBy, groupByYear = true } = Astro.props as {
   years: number[];
   groups: { year: number; items: CollectionEntry<'activities'>[] }[];
   filterBy?: string;
+  groupByYear?: boolean; // <— NEW
 };
 
 // Helper: simple image resolver (matches same logic used elsewhere)
@@ -30,70 +31,145 @@ function matchesFilter(entry: CollectionEntry<'activities'>) {
   const speakers = normalizeSpeakers(entry.data.speakers);
   return speakers.some((s) => s.toLowerCase() === filterBy.toLowerCase());
 }
+
+function dateStr(d?: string) {
+  return d ? new Date(d).toLocaleDateString() : '';
+}
+
+// Build a flat list when needed (keep year info around)
+const flat = groups.flatMap(g =>
+  g.items.map(it => ({ item: it, year: g.year }))
+).filter(({ item }) => matchesFilter(item));
+
+// Sensible default sort for flat mode: most recent first (by date, then by year)
+flat.sort((a, b) => {
+  const ta = a.item.data.date ? new Date(a.item.data.date).getTime() : 0;
+  const tb = b.item.data.date ? new Date(b.item.data.date).getTime() : 0;
+  if (tb !== ta) return tb - ta;
+  return (b.year || 0) - (a.year || 0);
+});
 ---
 
-{groups.map((g, gi) => {
-  const items = g.items.filter(matchesFilter);
-  if (!items.length) return null;
-  return (
-    <section
-      id={`y-${g.year}`}
-      class={(gi > 0 ? 'pt-10 mt-10 border-t border-white/10 ' : '') +
-        'intersect-once intersect-quarter intersect-no-queue ' +
-        'motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'}
-      style="animation-delay:140ms"
-    >
-      <h2 class="mb-4 text-2xl font-semibold">{g.year || 'Undated'}</h2>
+{groupByYear ? (
+  // ===== Grouped by year (original layout) =====
+  <>
+    {groups.map((g, gi) => {
+      const items = g.items.filter(matchesFilter);
+      if (!items.length) return null;
+      return (
+        <section
+          id={`y-${g.year}`}
+          class={(gi > 0 ? 'pt-10 mt-10 border-t border-white/10 ' : '') +
+            'intersect-once intersect-quarter intersect-no-queue ' +
+            'motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade'}
+          style="animation-delay:140ms"
+        >
+          <h2 class="mb-4 text-2xl font-semibold">{g.year || 'Undated'}</h2>
 
-      <ul class="space-y-4">
-        {items.map((t, i) => (
-          <li
-            class="relative rounded-lg border dark:border-white/10 p-5
-                   transition hover:shadow-lg hover:-translate-y-0.5
-                   intersect-once intersect-quarter intersect-no-queue
-                   motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
-            style={`animation-delay:${Math.min(i * 70 + 100, 500)}ms`}
-          >
-            <a
-              href={`/activities/${t.slug}`}
-              aria-label={t.data.title}
-              class="absolute inset-0 z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            />
+          <ul class="space-y-4">
+            {items.map((t, i) => (
+              <li
+                class="relative rounded-lg border dark:border-white/10 p-5
+                       transition hover:shadow-lg hover:-translate-y-0.5
+                       intersect-once intersect-quarter intersect-no-queue
+                       motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+                style={`animation-delay:${Math.min(i * 70 + 100, 500)}ms`}
+              >
+                <a
+                  href={`/activities/${t.slug}`}
+                  aria-label={t.data.title}
+                  class="absolute inset-0 z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                />
 
-            <div class="flex items-start gap-4">
-              {(() => {
-                const thumb = resolveImagePath(t.data.image);
-                return thumb ? (
-                  <img
-                    src={thumb}
-                    alt={t.data.title}
-                    class="w-16 h-16 object-cover rounded-md flex-shrink-0"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ) : (
-                  <div class="w-16 h-16 rounded-md bg-white/10 flex-shrink-0" />
-                );
-              })()}
+                <div class="flex items-start gap-4">
+                  {(() => {
+                    const thumb = resolveImagePath(t.data.image);
+                    return thumb ? (
+                      <img
+                        src={thumb}
+                        alt={t.data.title}
+                        class="w-16 h-16 object-cover rounded-md flex-shrink-0"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
+                      <div class="w-16 h-16 rounded-md bg-white/10 flex-shrink-0" />
+                    );
+                  })()}
 
-              <div>
-                <h3 class="text-lg font-semibold leading-snug">{t.data.title}</h3>
+                  <div>
+                    <h3 class="text-lg font-semibold leading-snug">{t.data.title}</h3>
+                    <p class="text-sm opacity-90">
+                      {dateStr(t.data.date)}
+                      {t.data.location ? ` · ${t.data.location}` : ''}
+                    </p>
+                    {normalizeSpeakers(t.data.speakers).length > 0 && (
+                      <p class="text-sm opacity-90">
+                        Speakers: {normalizeSpeakers(t.data.speakers).join(', ')}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      );
+    })}
+  </>
+) : (
+  // ===== Flat list (no year headers) =====
+  <section
+    class="intersect-once intersect-quarter intersect-no-queue
+           motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+    style="animation-delay:140ms"
+  >
+    <ul class="space-y-4">
+      {flat.map(({ item: t, year }, i) => (
+        <li
+          class="relative rounded-lg border dark:border-white/10 p-5
+                 transition hover:shadow-lg hover:-translate-y-0.5
+                 intersect-once intersect-quarter intersect-no-queue
+                 motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade"
+          style={`animation-delay:${Math.min(i * 60 + 100, 500)}ms`}
+        >
+          <a
+            href={`/activities/${t.slug}`}
+            aria-label={t.data.title}
+            class="absolute inset-0 z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          />
+
+          <div class="flex items-start gap-4">
+            {(() => {
+              const thumb = resolveImagePath(t.data.image);
+              return thumb ? (
+                <img
+                  src={thumb}
+                  alt={t.data.title}
+                  class="w-16 h-16 object-cover rounded-md flex-shrink-0"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <div class="w-16 h-16 rounded-md bg-white/10 flex-shrink-0" />
+              );
+            })()}
+
+            <div>
+              <h3 class="text-lg font-semibold leading-snug">{t.data.title}</h3>
+              <p class="text-sm opacity-90">
+                {dateStr(t.data.date)}
+                {t.data.location ? ` · ${t.data.location}` : ''}
+              </p>
+              {normalizeSpeakers(t.data.speakers).length > 0 && (
                 <p class="text-sm opacity-90">
-                  {t.data.date
-                    ? new Date(t.data.date).toLocaleDateString()
-                    : ''}
-                  {t.data.location ? ` · ${t.data.location}` : ''}
+                  Speakers: {normalizeSpeakers(t.data.speakers).join(', ')}
                 </p>
-                {normalizeSpeakers(t.data.speakers).length > 0 && (
-                  <p class="text-sm opacity-90">
-                    Speakers: {normalizeSpeakers(t.data.speakers).join(', ')}
-                  </p>
-                )}
-              </div>
+              )}
             </div>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-})}
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}

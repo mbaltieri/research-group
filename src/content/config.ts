@@ -154,14 +154,14 @@ const postCollection = defineCollection({
   loader: glob({ pattern: ['*.md', '*.mdx'], base: 'src/data/post' }),
   schema: z.object({
     title: z.string(),
-    publishDate: z.date().optional(),
+    publishDate: z.date(),
     updateDate: z.date().optional(),
     draft: z.boolean().optional(),
 
     excerpt: z.string().optional(),
     image: z.string().optional(),
 
-    category: z.string().optional(),
+    category: z.enum(["News", "Press Release"]),
     tags: z.array(z.string()).optional(),
     author: z.string().optional(),
 

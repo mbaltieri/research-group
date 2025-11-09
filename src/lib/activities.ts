@@ -19,7 +19,7 @@ export async function loadActivities() {
   // Group by type (exclude "talk" from the grid)
   const groups = {
     workshop: [] as Activity[],
-    readinggroup: [] as Activity[],
+    // readinggroup: [] as Activity[],
     seminar: [] as Activity[],
     other: [] as Activity[],
   };
