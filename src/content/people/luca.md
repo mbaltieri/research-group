@@ -2,7 +2,7 @@
 name: Luca Nunziante
 role: Senior Researcher
 group: Researchers
-bio: "."
+bio: "Robot Control, Robot Learning, Reinforcement Learning."
 # email: jane@example.org
 # website: https://janedoe.ai
 # github: janedoe

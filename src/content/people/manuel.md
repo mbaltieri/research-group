@@ -1,6 +1,6 @@
 ---
 name: Manuel Baltieri
-role: Team Lead
+role: Research Team Lead
 group: Team Leaders
 bio: "Artificial Life, Agent Foundations, Applied Category, Cybernetics."
 github: mbaltieri

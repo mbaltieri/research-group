@@ -2,7 +2,7 @@
 name: Sarah Cosentino
 role: Chief Researcher
 group: Researchers
-bio: "."
+bio: "Physiological sensing, Biosignal Human-Machine interface, Neurotechnology, Consciousnes."
 # email: jane@example.org
 # website: https://janedoe.ai
 github: gaijingeek

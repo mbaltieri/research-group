@@ -34,7 +34,7 @@ export interface Props {
   position?: string;
 
   /** NEW: force show/hide language switcher per render (overrides auto) */
-  showLanguageSwitcher?: boolean;
+showLanguageSwitcher?: boolean;
 
   /** NEW: social icons for the top header */
   socialLinks?: Array<Link>;
@@ -180,7 +180,7 @@ const shouldShowLang =
           <!-- } -->
 
           {socialLinks?.length > 0 && (
-            <div class="hidden md:flex items-center ml-3 gap-3">
+            <div class="flex items-center ml-2 md:ml-3 gap-2 md:gap-3">
               {socialLinks.map((item) => (
                 <a
                   href={item.href}

@@ -1,6 +1,6 @@
 ---
 name: Kan Akutsu
-role: Team Lead
+role: Research Team Lead
 group: Team Leaders
 bio: "Software Engineering, Games."
 image: /src/assets/images/people/kan.jpg
